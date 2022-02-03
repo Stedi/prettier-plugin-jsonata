@@ -17,7 +17,7 @@
     "clean": "rm -rf ./dist",
     "release": "semantic-release",
     "prepare": "npm run build",
-    "check": "concurrently npm:test npm:test:integration npm:types npm:lint npm:style"
+    "check": "concurrently npm:test npm:types npm:lint npm:style"
   },
   "repository": {
     "type": "git",
