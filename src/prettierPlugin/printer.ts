@@ -5,6 +5,7 @@ import type {
   BindNode,
   BlockNode,
   ConditionNode,
+  DescendantNode,
   FilterNode,
   FunctionNode,
   JsonataASTNode,
@@ -18,6 +19,7 @@ import type {
   UnaryNode,
   ValueNode,
   VariableNode,
+  WildcardNode,
 } from "../types";
 import * as prettier from "prettier";
 import type { AstPath, Doc, Options, Printer } from "prettier";
@@ -37,9 +39,9 @@ export const print: Printer["print"] = (path, options, printChildren) => {
   } else if (node.type === "variable") {
     return printVariableNode(node, ...commonPrintArgs);
   } else if (node.type === "wildcard") {
-    return node.value;
+    return printWildcardNode(node, ...commonPrintArgs);
   } else if (node.type === "descendant") {
-    return node.value;
+    return printDescendantNode(node, ...commonPrintArgs);
   } else if (node.type === "number") {
     return printNumberNode(node, ...commonPrintArgs);
   } else if (node.type === "string") {
@@ -133,7 +135,7 @@ const printStringNode: PrintNodeFunction<StringNode> = (node, path, options, pri
 };
 
 const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printChildren) => {
-  const parts: Doc[] = node.steps.flatMap((step, idx) => {
+  const steps: Doc[] = node.steps.flatMap((step, idx) => {
     if (idx === 0) {
       return printChildren(["steps", idx]);
     }
@@ -145,7 +147,13 @@ const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printCh
     return indent([softline, ".", printChildren(["steps", idx])]);
   });
 
-  return group(parts);
+  const lastStepHasKeepArray = node.steps[node.steps.length - 1]?.keepArray === true;
+
+  return group([
+    ...steps,
+    printPredicate(node, path, options, printChildren),
+    lastStepHasKeepArray ? "" : printKeepArray(node),
+  ]);
 };
 
 const printFunctionNode: PrintNodeFunction<FunctionNode> = (node, path, options, printChildren) => {
@@ -179,6 +187,14 @@ const printVariableNode: PrintNodeFunction<VariableNode> = (node, path, options,
   ]);
 };
 
+const printWildcardNode: PrintNodeFunction<WildcardNode> = (node) => {
+  return node.value;
+};
+
+const printDescendantNode: PrintNodeFunction<DescendantNode> = (node) => {
+  return node.value;
+};
+
 const printFilterNode: PrintNodeFunction<FilterNode> = (node, path, options, printChildren) => {
   return group(["[", indent([softline, printChildren("expr")]), softline, "]"]);
 };
@@ -199,6 +215,8 @@ const printLambdaNode: PrintNodeFunction<LambdaNode> = (node, path, options, pri
     indent([line, printChildren("body")]),
     line,
     "}",
+    printPredicate(node, path, options, printChildren),
+    printKeepArray(node),
   ]);
 };
 
@@ -214,7 +232,15 @@ const printConditionNode: PrintNodeFunction<ConditionNode> = (node, path, option
   ]);
 };
 
-const printValueNode: PrintNodeFunction<ValueNode> = (node) => {
+const printValueNode: PrintNodeFunction<ValueNode> = (node, path, options, printChildren) => {
+  return group([
+    printValueNodeValue(node, path, options, printChildren),
+    printPredicate(node, path, options, printChildren),
+    printKeepArray(node),
+  ]);
+};
+
+const printValueNodeValue: PrintNodeFunction<ValueNode> = (node) => {
   if (node.value === null) return "null";
   if (node.value === false) return "false";
   if (node.value === true) return "true";
