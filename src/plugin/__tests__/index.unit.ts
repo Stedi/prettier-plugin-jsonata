@@ -1,4 +1,4 @@
-import * as prettierPlugin from "../.";
+import * as prettierPlugin from "..";
 import * as prettier from "prettier";
 import jsonata from "jsonata";
 

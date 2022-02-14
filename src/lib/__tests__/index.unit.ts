@@ -1,5 +1,5 @@
 import prettier from "prettier";
-import { JsonataASTNode } from "../types";
+import { JsonataASTNode } from "../../types";
 import { formatJsonata, serializeJsonata } from "..";
 import jsonata from "jsonata";
 
