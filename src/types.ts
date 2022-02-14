@@ -1,9 +1,3 @@
-export interface JsonataError extends Error {
-  code: string;
-  position?: number;
-  token?: string;
-}
-
 export interface Node {
   position: number;
   value: unknown;
