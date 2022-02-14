@@ -147,17 +147,7 @@ const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printCh
     return indent([softline, ".", printChildren(["steps", idx])]);
   });
 
-  const lastStepHasKeepArray = node.steps[node.steps.length - 1]?.keepArray === true;
-
-  return group([
-    ...steps,
-    printPredicate(node, path, options, printChildren),
-
-    // When processing an input like `foo[]` JSONata parser sets `keepArray` on both the PathNode itself
-    // and the node inside the last path step, therefore we only append the `[]` to the path node,
-    // if the last step node does not have `keepArray` set to true.
-    lastStepHasKeepArray ? "" : printKeepArray(node),
-  ]);
+  return group(steps);
 };
 
 const printFunctionNode: PrintNodeFunction<FunctionNode> = (node, path, options, printChildren) => {
