@@ -1,1 +1,1 @@
-export * from "./plugin";
+export { languages, parsers, printers } from "./plugin";
