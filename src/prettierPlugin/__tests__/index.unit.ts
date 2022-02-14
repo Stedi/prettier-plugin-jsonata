@@ -421,6 +421,12 @@ describe("prettierPlugin", () => {
     formatted = format(`123[0]`);
     expect(formatted).toMatchInlineSnapshot(`"123[0]"`);
 
+    formatted = format(`true[0]`);
+    expect(formatted).toMatchInlineSnapshot(`"true[0]"`);
+
+    formatted = format(`null[0]`);
+    expect(formatted).toMatchInlineSnapshot(`"null[0]"`);
+
     formatted = format(`foo(bar)[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)[0]"`);
 
@@ -436,6 +442,12 @@ describe("prettierPlugin", () => {
         foo
       )[0]"
     `);
+
+    formatted = format(`foo()[0]`);
+    expect(formatted).toMatchInlineSnapshot(`"foo()[0]"`);
+
+    formatted = format(`function() { foo }[0]`);
+    expect(formatted).toMatchInlineSnapshot(`"function() { foo }[0]"`);
   });
 
   test("handles keepArray on the majority of node types", () => {
@@ -457,6 +469,12 @@ describe("prettierPlugin", () => {
     formatted = format(`123[]`);
     expect(formatted).toMatchInlineSnapshot(`"123[]"`);
 
+    formatted = format(`true[]`);
+    expect(formatted).toMatchInlineSnapshot(`"true[]"`);
+
+    formatted = format(`null[]`);
+    expect(formatted).toMatchInlineSnapshot(`"null[]"`);
+
     formatted = format(`foo(bar)[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)[]"`);
 
@@ -472,6 +490,12 @@ describe("prettierPlugin", () => {
         foo
       )[]"
     `);
+
+    formatted = format(`foo()[]`);
+    expect(formatted).toMatchInlineSnapshot(`"foo()[]"`);
+
+    formatted = format(`function() { foo }[]`);
+    expect(formatted).toMatchInlineSnapshot(`"function() { foo }[]"`);
   });
 
   test.each([
