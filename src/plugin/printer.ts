@@ -13,6 +13,7 @@ import type {
   NameNode,
   NumberNode,
   ObjectUnaryNode,
+  ParentNode,
   PathNode,
   SortNode,
   StringNode,
@@ -68,6 +69,8 @@ export const print: Printer["print"] = (path, options, printChildren) => {
     return printSortNode(node, ...commonPrintArgs);
   } else if (node.type === "unary") {
     return printUnaryNode(node, ...commonPrintArgs);
+  } else if (node.type === "parent") {
+    return printParentNode(node, ...commonPrintArgs);
   }
 
   throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
@@ -323,6 +326,15 @@ const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, opti
   ]);
 };
 
+const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, printChildren) => {
+  return group([
+    "%",
+    printPredicate(node, path, options, printChildren),
+    printKeepArray(node),
+    printStages(node, path, options, printChildren),
+  ]);
+};
+
 const printPredicate: PrintNodeFunction = (node, path, options, printChildren) => {
   if (!node.predicate) {
     return "";
@@ -331,7 +343,7 @@ const printPredicate: PrintNodeFunction = (node, path, options, printChildren) =
   return path.map(printChildren, "predicate");
 };
 
-const printStages: PrintNodeFunction<NameNode | VariableNode> = (node, path, options, printChildren) => {
+const printStages: PrintNodeFunction<NameNode | VariableNode | ParentNode> = (node, path, options, printChildren) => {
   if (!node.stages) {
     return "";
   }

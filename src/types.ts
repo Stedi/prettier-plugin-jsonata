@@ -131,6 +131,16 @@ export interface LambdaNode extends Node {
   thunk?: boolean;
 }
 
+export interface ParentNode extends Node {
+  type: "parent";
+  slot: {
+    label: string;
+    level: number;
+    index: number;
+  };
+  stages?: JsonataASTNode[];
+}
+
 export type LiteralNode = NumberNode | StringNode | ValueNode;
 
 export type JsonataASTNode =
@@ -151,4 +161,5 @@ export type JsonataASTNode =
   | ConditionNode
   | BindNode
   | LambdaNode
-  | SortNode;
+  | SortNode
+  | ParentNode;
