@@ -21,10 +21,10 @@ and then print out that data structure in a "pretty" style.
 
 ```bash
 # Install locally in a project
-npm install --save-dev prettier-plugin-jsonata prettier
+npm install --save-dev @stedi-oss/prettier-plugin-jsonata prettier
 
 # Or globally
-npm install -g prettier-plugin-jsonata prettier
+npm install -g @stedi-oss/prettier-plugin-jsonata prettier
 ```
 
 ## Usage with the CLI
@@ -42,7 +42,7 @@ You can format your JSONata expressions using Prettier's own `format` method lik
 
 ```ts
 import * as prettier from "prettier";
-import * as prettierPlugin from "@stedi/prettier-plugin-jsonata";
+import * as prettierPlugin from "@stedi-oss/prettier-plugin-jsonata";
 
 const expression = "($myVar:=foo.bar[]; $reverse($myVar))";
 const formattedExpression = prettier.format(expression, {
@@ -59,7 +59,7 @@ console.log(formattedExpression);
 Alternatively, you can use the `formatJsonata` function:
 
 ```ts
-import { formatJsonata } from "@stedi/prettier-plugin-jsonata/dist/lib";
+import { formatJsonata } from "@stedi-oss/prettier-plugin-jsonata/dist/lib";
 
 const expression = "($myVar:=foo.bar[]; $reverse($myVar))";
 const formattedExpression = formatJsonata(expression);
@@ -72,7 +72,7 @@ you can use `serializeJsonata` function:
 
 ```ts
 import jsonata from "jsonata";
-import { serializeJsonata } from "@stedi/prettier-plugin-jsonata/dist/lib";
+import { serializeJsonata } from "@stedi-oss/prettier-plugin-jsonata/dist/lib";
 
 const jsonataAST = jsonata("($myVar:=foo.bar[]; $reverse($myVar))").ast();
 const formattedExpression = serializeJsonata(jsonataAST);

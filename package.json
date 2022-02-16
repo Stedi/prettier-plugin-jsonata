@@ -1,5 +1,5 @@
 {
-  "name": "@stedi/prettier-plugin-jsonata",
+  "name": "@stedi-oss/prettier-plugin-jsonata",
   "version": "1.0.0",
   "description": "Prettier plugin for JSONata language",
   "main": "dist/index.js",
@@ -23,9 +23,13 @@
     "type": "git",
     "url": "git+https://github.com/Stedi/prettier-plugin-jsonata.git"
   },
-  "keywords": [],
-  "author": "transformers@stedi.com",
-  "license": "ISC",
+  "keywords": [
+    "jsonata",
+    "prettier",
+    "plugin"
+  ],
+  "author": "Stedi Engineering <engineering@stedi.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Stedi/prettier-plugin-jsonata/issues"
   },
@@ -34,7 +38,7 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "homepage": "https://github.com/Stedi/prettier-plugin-jsonata#readme",
+  "homepage": "https://github.com/Stedi/prettier-plugin-jsonata#README.md",
   "devDependencies": {
     "@commitlint/cli": "^13.2.1",
     "@commitlint/config-conventional": "^13.2.0",
@@ -63,7 +67,7 @@
     "prettier": "^2.5.1"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "access": "public"
   },
   "volta": {
     "node": "14.16.0",
