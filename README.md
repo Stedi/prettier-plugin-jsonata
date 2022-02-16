@@ -13,8 +13,8 @@ and then print out that data structure in a "pretty" style.
 ## Status
 
 - The plugin supports all JSONata feature up to 1.8.6 version, and is backward compatible with 1.7.0 release.
-- The printer can output formatted code for any AST node type.
-- Only very basic formatting options are supported: `printWidth`, `tabWidth`, and `useTabs`.
+- The plugin can output formatted code for any AST node type.
+- Only `printWidth`, `tabWidth`, and `useTabs` formatting options are supported.
 - Native integration with code editors is not supported due to the lack of IDE extensions providing JSONata language support. Once such extensions are available, it should become possible to format JSONata documents on save when this plugin is installed.
 
 ## Install
@@ -27,7 +27,7 @@ npm install --save-dev prettier-plugin-jsonata prettier
 npm install -g prettier-plugin-jsonata prettier
 ```
 
-## How to use with CLI
+## Usage with the CLI
 
 Once you installed `prettier` and `prettier-plugin-jsonata` as dev dependencies in your project,
 you can format your code using Prettier CLI.
@@ -36,7 +36,7 @@ you can format your code using Prettier CLI.
 npx prettier --write ./**/*.jsonata
 ```
 
-## How to use programmatically
+## Programmatic usage
 
 You can format your JSONata expressions using Prettier's own `format` method like this:
 
@@ -56,7 +56,7 @@ const formattedExpression = prettier.format(expression, {
 console.log(formattedExpression);
 ```
 
-Alternatively, you can use the `formatJsonata` helper function:
+Alternatively, you can use the `formatJsonata` function:
 
 ```ts
 import { formatJsonata } from "@stedi/prettier-plugin-jsonata/dist/lib";
