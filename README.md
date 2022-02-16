@@ -15,7 +15,7 @@ and then print out that data structure in a "pretty" style.
 - The plugin supports all JSONata feature up to 1.8.6 version, and is backward compatible with 1.7.0 release.
 - The printer can output formatted code for any AST node type.
 - Only very basic formatting options are supported: `printWidth`, `tabWidth`, and `useTabs`.
-- Integration with code editors was not tested yet, but should be possible with the help of regular prettier extensions for popular IDEs.
+- Native integration with code editors is not supported due to the lack of IDE extensions providing JSONata language support. Once such extensions are available, it should become possible to format JSONata documents on save when this plugin is installed.
 
 ## Install
 
