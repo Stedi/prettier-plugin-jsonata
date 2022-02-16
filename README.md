@@ -30,10 +30,10 @@ npm install -g prettier-plugin-jsonata prettier
 ## How to use with CLI
 
 Once you installed `prettier` and `prettier-plugin-jsonata` as dev dependencies in your project,
-you can format your code using Prettier CLI. You may need to add `--plugin-search-dir=.`
+you can format your code using Prettier CLI.
 
 ```
-prettier --write --plugin-search-dir=. ./**/*.jsonata
+npx prettier --write ./**/*.jsonata
 ```
 
 ## How to use programmatically
