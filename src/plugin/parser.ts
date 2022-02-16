@@ -1,5 +1,6 @@
 import type { Parser } from "prettier";
-import type { JsonataASTNode, JsonataError } from "../types";
+import type { JsonataError } from "jsonata";
+import type { JsonataASTNode } from "../types";
 import jsonata from "jsonata";
 
 export const parse: Parser<JsonataASTNode>["parse"] = (expression) => {

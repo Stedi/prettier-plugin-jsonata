@@ -13,6 +13,7 @@ import type {
   NameNode,
   NumberNode,
   ObjectUnaryNode,
+  ParentNode,
   PathNode,
   SortNode,
   StringNode,
@@ -68,6 +69,8 @@ export const print: Printer["print"] = (path, options, printChildren) => {
     return printSortNode(node, ...commonPrintArgs);
   } else if (node.type === "unary") {
     return printUnaryNode(node, ...commonPrintArgs);
+  } else if (node.type === "parent") {
+    return printParentNode(node, ...commonPrintArgs);
   }
 
   throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
@@ -147,17 +150,7 @@ const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printCh
     return indent([softline, ".", printChildren(["steps", idx])]);
   });
 
-  const lastStepHasKeepArray = node.steps[node.steps.length - 1]?.keepArray === true;
-
-  return group([
-    ...steps,
-    printPredicate(node, path, options, printChildren),
-
-    // When processing an input like `foo[]` JSONata parser sets `keepArray` on both the PathNode itself
-    // and the node inside the last path step, therefore we only append the `[]` to the path node,
-    // if the last step node does not have `keepArray` set to true.
-    lastStepHasKeepArray ? "" : printKeepArray(node),
-  ]);
+  return group(steps);
 };
 
 const printFunctionNode: PrintNodeFunction<FunctionNode> = (node, path, options, printChildren) => {
@@ -333,6 +326,15 @@ const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, opti
   ]);
 };
 
+const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, printChildren) => {
+  return group([
+    "%",
+    printPredicate(node, path, options, printChildren),
+    printKeepArray(node),
+    printStages(node, path, options, printChildren),
+  ]);
+};
+
 const printPredicate: PrintNodeFunction = (node, path, options, printChildren) => {
   if (!node.predicate) {
     return "";
@@ -341,7 +343,7 @@ const printPredicate: PrintNodeFunction = (node, path, options, printChildren) =
   return path.map(printChildren, "predicate");
 };
 
-const printStages: PrintNodeFunction<NameNode | VariableNode> = (node, path, options, printChildren) => {
+const printStages: PrintNodeFunction<NameNode | VariableNode | ParentNode> = (node, path, options, printChildren) => {
   if (!node.stages) {
     return "";
   }
