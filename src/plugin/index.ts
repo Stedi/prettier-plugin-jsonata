@@ -8,6 +8,7 @@ export const AST_FORMAT_NAME = "JSONataASTNode";
 export const languages: Plugin["languages"] = [
   {
     name: "JSONata",
+    extensions: ["jsonata", "JSONata"],
     parsers: [AST_PARSER_NAME],
   },
 ];
