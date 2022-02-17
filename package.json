@@ -1,5 +1,5 @@
 {
-  "name": "@stedi-oss/prettier-plugin-jsonata",
+  "name": "@stedi/prettier-plugin-jsonata",
   "version": "1.0.0",
   "description": "Prettier plugin for JSONata language",
   "main": "dist/index.js",
