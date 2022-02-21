@@ -1,4 +1,15 @@
 {
-  "branches": ["main"],
-  "plugins": ["@semantic-release/commit-analyzer", "@semantic-release/npm"]
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/npm",
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "echo ::set-output name=released_version::${nextRelease.version}"
+      }
+    ]
+  ]
 }

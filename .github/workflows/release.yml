@@ -7,8 +7,8 @@ jobs:
   release-external:
     runs-on: ubuntu-latest
     outputs:
-      version_pre_release: ${{ steps.print_version_pre_release.outputs.test }}
-      version_post_release: ${{ steps.print_version_post_release.outputs.test }}
+      version_pre_release: ${{ steps.print_version_pre_release.outputs.version_pre_release }}
+      released_version: ${{ steps.release.outputs.released_version }}
     env:
       GITHUB_TOKEN: placeholder
     steps:
@@ -34,6 +34,7 @@ jobs:
         id: print_version_pre_release
         run: echo "::set-output name=version_pre_release::$(npm view @stedi/prettier-plugin-jsonata version)"
       - run: npm run release
+        id: release
         env:
           GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}
           GIT_COMMITTER_NAME: ${{steps.import_gpg.outputs.name}}
@@ -42,14 +43,10 @@ jobs:
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm cache clear --force
-      - run: 'echo "version_post_release: $(npm view @stedi/prettier-plugin-jsonata version)"'
-      - name: print version post release
-        id: print_version_post_release
-        run: echo "::set-output name=version_post_release::$(npm view @stedi/prettier-plugin-jsonata version)"
 
   release-internal:
     needs: release-external
-    if: needs.release-external.outputs.version_pre_release != needs.release-external.outputs.version_post_release
+    if: needs.release-external.outputs.version_pre_release != needs.release-external.outputs.released_version
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: placeholder
@@ -65,7 +62,7 @@ jobs:
       - run: npm run check
       - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
       - run: sed -i '/"access":\ "public"/d' package.json
-      - run: npm version ${{needs.release-external.outputs.version_post_release}} --allow-same-version
+      - run: npm version ${{needs.release-external.outputs.released_version}} --allow-same-version
       - run: npm publish
         env:
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
