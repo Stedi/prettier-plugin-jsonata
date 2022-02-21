@@ -41,6 +41,7 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{steps.import_gpg.outputs.email}}
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm cache clear --force
       - run: 'echo "version_post_release: $(npm view @stedi/prettier-plugin-jsonata version)"'
       - name: print version post release
         id: print_version_post_release
