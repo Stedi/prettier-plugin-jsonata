@@ -21,10 +21,10 @@ and then print out that data structure in a "pretty" style.
 
 ```bash
 # Install locally in a project
-npm install --save-dev prettier-plugin-jsonata prettier
+npm install --save-dev @stedi/prettier-plugin-jsonata prettier
 
 # Or globally
-npm install -g prettier-plugin-jsonata prettier
+npm install -g @stedi/prettier-plugin-jsonata prettier
 ```
 
 ## Usage with the CLI
