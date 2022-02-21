@@ -7,7 +7,6 @@ jobs:
   release-external:
     runs-on: ubuntu-latest
     outputs:
-      version_pre_release: ${{ steps.print_version_pre_release.outputs.version_pre_release }}
       released_version: ${{ steps.release.outputs.released_version }}
     env:
       GITHUB_TOKEN: placeholder
@@ -29,10 +28,6 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: 'echo "email: ${{ steps.import_gpg.outputs.email }}"'
-      - run: 'echo "version_pre_release: $(npm view @stedi/prettier-plugin-jsonata version)"'
-      - name: print version pre release
-        id: print_version_pre_release
-        run: echo "::set-output name=version_pre_release::$(npm view @stedi/prettier-plugin-jsonata version)"
       - run: npm run release
         id: release
         env:
@@ -63,7 +58,6 @@ jobs:
       - run: npm run check
       - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
       - run: sed -i '/"access":\ "public"/d' package.json
-      - run: npm version ${{needs.release-external.outputs.released_version}} --allow-same-version
       - run: npm publish
         env:
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
