@@ -4,9 +4,8 @@
   ],
   "plugins": [
     "@semantic-release/commit-analyzer",
-    "@semantic-release/npm",
     [
-      "@semantic-release/exec",
+      "@semantic-release/npm",
       {
         "publishCmd": "echo ::set-output name=released_version::${nextRelease.version}"
       }
