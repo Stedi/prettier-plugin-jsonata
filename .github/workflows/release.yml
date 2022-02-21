@@ -29,6 +29,7 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: 'echo "email: ${{ steps.import_gpg.outputs.email }}"'
+      - run: 'echo "version_pre_release: $(npm view @stedi/prettier-plugin-jsonata version)"'
       - name: print version pre release
         id: print_version_pre_release
         run: echo "::set-output name=version_pre_release::$(npm view @stedi/prettier-plugin-jsonata version)"
@@ -40,6 +41,7 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{steps.import_gpg.outputs.email}}
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: 'echo "version_post_release: $(npm view @stedi/prettier-plugin-jsonata version)"'
       - name: print version post release
         id: print_version_post_release
         run: echo "::set-output name=version_post_release::$(npm view @stedi/prettier-plugin-jsonata version)"
