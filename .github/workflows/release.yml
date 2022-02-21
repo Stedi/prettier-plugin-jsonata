@@ -46,7 +46,7 @@ jobs:
 
   release-internal:
     needs: release-external
-    if: needs.release-external.outputs.version_pre_release != needs.release-external.outputs.released_version
+    if: needs.release-external.outputs.released_version != ''
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: placeholder
@@ -55,6 +55,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
+      - run: 'echo "released_version: ${{needs.release-external.outputs.released_version}}"'
       - run: npm ci
         env:
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
