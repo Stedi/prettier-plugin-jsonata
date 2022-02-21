@@ -13,7 +13,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
-          registry-url: https://registry.npmjs.org
       - run: npm ci
         env:
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
@@ -27,7 +26,6 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: 'echo "email: ${{ steps.import_gpg.outputs.email }}"'
-        env: {}
       - run: npm run release
         env:
           GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}

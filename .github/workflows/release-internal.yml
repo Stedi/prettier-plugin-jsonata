@@ -13,7 +13,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
-          registry-url: https://npm.pkg.github.com/Stedi
       - run: npm ci
         env:
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
@@ -27,7 +26,8 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: 'echo "email: ${{ steps.import_gpg.outputs.email }}"'
-        env: {}
+      - run: sed -i '' "s/registry.npmjs.org/npm.pkg.github.com\/Stedi/" package.json
+      - run: sed -i '' '/"access":\ "public"/d' package.json
       - run: npm run release
         env:
           GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}
