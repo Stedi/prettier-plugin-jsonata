@@ -37,13 +37,8 @@ jobs:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
       - run: sed -i '/"access":\ "public"/d' package.json
-      - run: npm view @stedi/prettier-plugin-jsonata version
-      # - run: npm publish
-      #   name: release to internal Stedi registry
-      #   env:
-      #     GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}
-      #     GIT_COMMITTER_NAME: ${{steps.import_gpg.outputs.name}}
-      #     GIT_AUTHOR_EMAIL: ${{steps.import_gpg.outputs.email}}
-      #     GIT_COMMITTER_EMAIL: ${{steps.import_gpg.outputs.email}}
-      #     GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
-      #     NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: --tag npm view @stedi/prettier-plugin-jsonata version
+      - run: npm view @stedi/prettier-plugin-jsonata version | npm publish --tag $
+        name: release to internal Stedi registry
+        env:
+          GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
