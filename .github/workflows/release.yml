@@ -9,8 +9,6 @@ jobs:
     outputs:
       version_pre_release: ${{ steps.print_version_pre_release.outputs.test }}
       version_post_release: ${{ steps.print_version_post_release.outputs.test }}
-    env:
-      GITHUB_TOKEN: placeholder
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -48,8 +46,6 @@ jobs:
     needs: release-external
     if: needs.release-external.outputs.version_pre_release != needs.release-external.outputs.version_post_release
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: placeholder
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
