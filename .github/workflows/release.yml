@@ -1,4 +1,4 @@
-name: release-external
+name: release
 on:
   push:
     branches:
@@ -27,6 +27,7 @@ jobs:
         id: import_gpg
       - run: 'echo "email: ${{ steps.import_gpg.outputs.email }}"'
       - run: npm run release
+        name: release to external registry
         env:
           GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}
           GIT_COMMITTER_NAME: ${{steps.import_gpg.outputs.name}}
@@ -34,3 +35,15 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{steps.import_gpg.outputs.email}}
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
+      - run: sed -i '/"access":\ "public"/d' package.json
+      - run: npm view @stedi/prettier-plugin-jsonata version
+      # - run: npm publish
+      #   name: release to internal Stedi registry
+      #   env:
+      #     GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}
+      #     GIT_COMMITTER_NAME: ${{steps.import_gpg.outputs.name}}
+      #     GIT_AUTHOR_EMAIL: ${{steps.import_gpg.outputs.email}}
+      #     GIT_COMMITTER_EMAIL: ${{steps.import_gpg.outputs.email}}
+      #     GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
+      #     NPM_TOKEN: ${{secrets.NPM_TOKEN}}
