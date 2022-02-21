@@ -26,8 +26,8 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: 'echo "email: ${{ steps.import_gpg.outputs.email }}"'
-      - run: sed -i '' "s/registry.npmjs.org/npm.pkg.github.com\/Stedi/" package.json
-      - run: sed -i '' '/"access":\ "public"/d' package.json
+      - run: sed -i "s/registry.npmjs.org/npm.pkg.github.com\/Stedi/" package.json
+      - run: sed -i '/"access":\ "public"/d' package.json
       - run: npm run release
         env:
           GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}
