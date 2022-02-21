@@ -4,8 +4,11 @@ on:
     branches:
       - main
 jobs:
-  main:
+  release-external:
     runs-on: ubuntu-latest
+    outputs:
+      version_pre_release: ${{ steps.print_version_pre_release.outputs.test }}
+      version_post_release: ${{ steps.print_version_post_release.outputs.test }}
     env:
       GITHUB_TOKEN: placeholder
     steps:
@@ -26,8 +29,10 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: 'echo "email: ${{ steps.import_gpg.outputs.email }}"'
+      - name: print version pre release
+        id: print_version_pre_release
+        run: echo "::set-output name=version_pre_release::$(npm view @stedi/prettier-plugin-jsonata version)"
       - run: npm run release
-        name: release to external registry
         env:
           GIT_AUTHOR_NAME: ${{steps.import_gpg.outputs.name}}
           GIT_COMMITTER_NAME: ${{steps.import_gpg.outputs.name}}
@@ -35,9 +40,29 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{steps.import_gpg.outputs.email}}
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: print version post release
+        id: print_version_post_release
+        run: echo "::set-output name=version_post_release::$(npm view @stedi/prettier-plugin-jsonata version)"
+
+  release-internal:
+    needs: release-external
+    if: needs.release-external.outputs.version_pre_release != needs.release-external.outputs.version_post_release
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: placeholder
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: npm ci
+        env:
+          GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
+      - run: npm run build
+      - run: npm run check
       - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
       - run: sed -i '/"access":\ "public"/d' package.json
+      - run: npm version ${{needs.release-external.outputs.version_post_release}} --allow-same-version
       - run: npm publish
-        name: release to internal Stedi registry
         env:
           GITHUB_TOKEN: ${{secrets.ENG_GITHUB_TOKEN}}
