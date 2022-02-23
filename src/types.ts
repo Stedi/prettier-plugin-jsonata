@@ -38,6 +38,18 @@ export interface FunctionNode extends Node {
   procedure: VariableNode;
 }
 
+export interface PartialFunctionNode extends Node {
+  type: "partial";
+  value: "(";
+  arguments: JsonataASTNode[];
+  procedure: VariableNode;
+}
+
+export interface OperatorNode extends Node {
+  type: "operator";
+  value: "?";
+}
+
 export interface VariableNode extends Node {
   type: "variable";
   value: string;
@@ -149,6 +161,8 @@ export type JsonataASTNode =
   | ValueNode
   | BinaryNode
   | FunctionNode
+  | PartialFunctionNode
+  | OperatorNode
   | VariableNode
   | PathNode
   | BlockNode
