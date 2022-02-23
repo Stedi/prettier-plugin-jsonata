@@ -29,7 +29,7 @@ export interface BindNode extends Node {
   rhs: JsonataASTNode;
 }
 
-type BinaryValue = "=" | "!=" | ">" | "<" | ">=" | "<=" | "in" | "+" | "-" | "/" | "*" | "%";
+type BinaryValue = "=" | "!=" | ">" | "<" | ">=" | "<=" | "in" | "+" | "-" | "/" | "*" | "%" | "..";
 
 export interface FunctionNode extends Node {
   type: "function";
@@ -84,7 +84,7 @@ export interface SortNode extends Node {
   ];
 }
 
-export type UnaryNode = ObjectUnaryNode | ArrayUnaryNode;
+export type UnaryNode = ObjectUnaryNode | ArrayUnaryNode | NegationUnaryNode;
 
 export interface ObjectUnaryNode extends Node {
   type: "unary";
@@ -97,6 +97,12 @@ export interface ArrayUnaryNode extends Node {
   value: "[";
   expressions: JsonataASTNode[];
   consarray: boolean;
+}
+
+export interface NegationUnaryNode extends Node {
+  type: "unary";
+  value: "-";
+  expression: JsonataASTNode;
 }
 
 type UnaryTuple = [JsonataASTNode, JsonataASTNode];
