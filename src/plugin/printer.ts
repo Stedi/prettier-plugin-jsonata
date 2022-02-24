@@ -8,6 +8,7 @@ import type {
   DescendantNode,
   FilterNode,
   FunctionNode,
+  PartialFunctionNode,
   JsonataASTNode,
   LambdaNode,
   NameNode,
@@ -21,6 +22,8 @@ import type {
   ValueNode,
   VariableNode,
   WildcardNode,
+  OperatorNode,
+  NegationUnaryNode,
 } from "../types";
 import * as prettier from "prettier";
 import type { AstPath, Doc, Options, Printer } from "prettier";
@@ -37,12 +40,16 @@ export const print: Printer["print"] = (path, options, printChildren) => {
     return printBinaryNode(node, ...commonPrintArgs);
   } else if (node.type === "function") {
     return printFunctionNode(node, ...commonPrintArgs);
+  } else if (node.type === "partial") {
+    return printFunctionNode(node, ...commonPrintArgs);
   } else if (node.type === "variable") {
     return printVariableNode(node, ...commonPrintArgs);
   } else if (node.type === "wildcard") {
     return printWildcardNode(node, ...commonPrintArgs);
   } else if (node.type === "descendant") {
     return printDescendantNode(node, ...commonPrintArgs);
+  } else if (node.type === "operator") {
+    return printOperatorNode(node, ...commonPrintArgs);
   } else if (node.type === "number") {
     return printNumberNode(node, ...commonPrintArgs);
   } else if (node.type === "string") {
@@ -86,6 +93,10 @@ type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
 const { group, indent, join, line, hardline, breakParent, softline } = prettier.doc.builders;
 
 const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, printChildren) => {
+  if (node.value === "..") {
+    return group([printChildren("lhs"), indent([softline, node.value, printChildren("rhs")])]);
+  }
+
   return group([printChildren("lhs"), indent([line, node.value, " ", printChildren("rhs")])]);
 };
 
@@ -153,7 +164,8 @@ const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printCh
   return group(steps);
 };
 
-const printFunctionNode: PrintNodeFunction<FunctionNode> = (node, path, options, printChildren) => {
+type PrintFunctionNodeFunction = PrintNodeFunction<FunctionNode | PartialFunctionNode>;
+const printFunctionNode: PrintFunctionNodeFunction = (node, path, options, printChildren) => {
   return group([
     printChildren("procedure"),
     "(",
@@ -164,13 +176,17 @@ const printFunctionNode: PrintNodeFunction<FunctionNode> = (node, path, options,
   ]);
 };
 
-const printFunctionArguments: PrintNodeFunction<FunctionNode | LambdaNode> = (node, path, options, printChildren) => {
+type PrintFunctionArgumentsFunction = PrintNodeFunction<FunctionNode | PartialFunctionNode | LambdaNode>;
+const printFunctionArguments: PrintFunctionArgumentsFunction = (node, path, options, printChildren) => {
   if (!node.arguments?.length) {
     return "";
   }
 
-  const joinedArguments = join([",", line], path.map(printChildren, "arguments"));
+  if (node.arguments.length === 1) {
+    return printChildren(["arguments", 0]);
+  }
 
+  const joinedArguments = join([",", line], path.map(printChildren, "arguments"));
   return [indent([softline, joinedArguments]), softline];
 };
 
@@ -182,6 +198,10 @@ const printVariableNode: PrintNodeFunction<VariableNode> = (node, path, options,
     printKeepArray(node),
     printStages(node, path, options, printChildren),
   ]);
+};
+
+const printOperatorNode: PrintNodeFunction<OperatorNode> = (node) => {
+  return node.value;
 };
 
 const printWildcardNode: PrintNodeFunction<WildcardNode> = (node) => {
@@ -246,8 +266,21 @@ const printValueNodeValue: PrintNodeFunction<ValueNode> = (node) => {
 };
 
 const printBlockNode: PrintNodeFunction<BlockNode> = (node, path, options, printChildren) => {
-  const joinedExpressions = join([";", hardline], path.map(printChildren, "expressions"));
+  if (node.expressions.length === 0) {
+    return group(["()", printPredicate(node, path, options, printChildren), printKeepArray(node)]);
+  }
 
+  if (node.expressions.length === 1) {
+    return group([
+      "(",
+      printChildren(["expressions", 0]),
+      ")",
+      printPredicate(node, path, options, printChildren),
+      printKeepArray(node),
+    ]);
+  }
+
+  const joinedExpressions = join([";", hardline], path.map(printChildren, "expressions"));
   return group([
     "(",
     indent([hardline, joinedExpressions]),
@@ -282,6 +315,10 @@ const printUnaryNode: PrintNodeFunction<UnaryNode> = (node, path, options, print
 
   if (node.value === "[") {
     return printArrayUnaryNode(node, path, options, printChildren);
+  }
+
+  if (node.value === "-") {
+    return printNegationUnaryNode(node, path, options, printChildren);
   }
 
   throw new Error("Unhandled unary node " + (node as JsonataASTNode).value);
@@ -324,6 +361,10 @@ const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, opti
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
+};
+
+const printNegationUnaryNode: PrintNodeFunction<NegationUnaryNode> = (node, path, options, printChildren) => {
+  return group(["-", printChildren("expression")]);
 };
 
 const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, printChildren) => {

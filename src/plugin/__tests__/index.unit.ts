@@ -33,10 +33,15 @@ describe("prettierPlugin", () => {
     ["false"],
     ["1"],
     ["1.1"],
+    ["-1"],
+    ["-1.1"],
     ["{}"],
     ['{ "foo": "bar" }'],
     ["[]"],
+    ["[1..10]"],
+    ["[1..$n]"],
     ['["foo", "bar"]'],
+    ["-foo"],
     ["foo = 1"],
     ["foo.bar"],
     ["foo[bar = 1]"],
@@ -45,6 +50,13 @@ describe("prettierPlugin", () => {
     ["$.foo"],
     ["$$"],
     ["$$.foo"],
+    ["$foo"],
+    ["-$foo"],
+    ["$foo()"],
+    ["-$foo()"],
+    ["$foo(1)"],
+    ["$foo(1, 2)"],
+    ["$foo(?, 2)"],
     ["*"],
     ["*.foo"],
     ["**"],
@@ -58,6 +70,7 @@ describe("prettierPlugin", () => {
     ["foo + bar"],
     ["foo / bar"],
     ["foo * bar"],
+    ["foo + -bar"],
     ["`😊`"],
     ['"foo-bar"'],
     ['"foo+bar"'],
@@ -98,18 +111,10 @@ describe("prettierPlugin", () => {
 
   test("formats blocks with new lines", () => {
     let formatted = format(`()`);
-    expect(formatted).toMatchInlineSnapshot(`
-      "(
-
-      )"
-    `);
+    expect(formatted).toMatchInlineSnapshot(`"()"`);
 
     formatted = format(`(foo)`);
-    expect(formatted).toMatchInlineSnapshot(`
-      "(
-        foo
-      )"
-    `);
+    expect(formatted).toMatchInlineSnapshot(`"(foo)"`);
 
     formatted = format(`(foo;bar;baz)`);
     expect(formatted).toMatchInlineSnapshot(`
@@ -121,23 +126,23 @@ describe("prettierPlugin", () => {
     `);
 
     formatted = format(`(false ? ["foo", "bar"] : ["baz"])`);
+    expect(formatted).toMatchInlineSnapshot(`"(false ? [\\"foo\\", \\"bar\\"] : [\\"baz\\"])"`);
+
+    formatted = format(`(false ? ["foo", "bar"] : ["baz"]; boo)`);
     expect(formatted).toMatchInlineSnapshot(`
       "(
-        false ? [\\"foo\\", \\"bar\\"] : [\\"baz\\"]
+        false ? [\\"foo\\", \\"bar\\"] : [\\"baz\\"];
+        boo
       )"
     `);
   });
 
-  test("handles line breaks for functions on print width overflow", () => {
+  test("handles line breaks for functions with more than one argument on print width overflow", () => {
     let formatted = format(`longFunctionName()`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`"longFunctionName()"`);
 
     formatted = format(`longFunctionName($withArgument)`, { printWidth: 10 });
-    expect(formatted).toMatchInlineSnapshot(`
-      "longFunctionName(
-        $withArgument
-      )"
-    `);
+    expect(formatted).toMatchInlineSnapshot(`"longFunctionName($withArgument)"`);
 
     formatted = format(`longFunctionName($withArgument, $withAnotherArgument)`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
@@ -158,9 +163,7 @@ describe("prettierPlugin", () => {
 
     formatted = format(`function ($withArgument) { true }`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
-      "function(
-        $withArgument
-      ) {
+      "function($withArgument) {
         true
       }"
     `);
@@ -443,11 +446,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar][0]"`);
 
     formatted = format(`(foo)[0]`);
-    expect(formatted).toMatchInlineSnapshot(`
-      "(
-        foo
-      )[0]"
-    `);
+    expect(formatted).toMatchInlineSnapshot(`"(foo)[0]"`);
 
     formatted = format(`foo()[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo()[0]"`);
@@ -497,11 +496,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar][]"`);
 
     formatted = format(`(foo)[]`);
-    expect(formatted).toMatchInlineSnapshot(`
-      "(
-        foo
-      )[]"
-    `);
+    expect(formatted).toMatchInlineSnapshot(`"(foo)[]"`);
 
     formatted = format(`foo()[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo()[]"`);
@@ -616,6 +611,32 @@ $filter(
     "addressState": $itemToMap.geographic_location_N4.state_or_province_code_02,
     "addressZip": $itemToMap.geographic_location_N4.postal_code_03
   }
+)
+      `,
+    ],
+    [
+      '($pi := 3.141592653589793;$plot := function($x) {($floor := $string ~> $substringBefore(?, ".") ~> $number;$index := $floor(($x + 1) * 20 + 0.5);$join([0..$index].(".")) & "O" & $join([$index..40].(".")))};$product := function($a, $b) { $a * $b };$factorial := function($n) { $n = 0 ? 1 : $reduce([1..$n], $product) };$sin := function($x){$cos($x - $pi/2)};$cos := function($x){$x > $pi ? $cos($x - 2 * $pi) : $x < -$pi ? $cos($x + 2 * $pi) :$sum([0..12].($power(-1, $) * $power($x, 2*$) / $factorial(2*$)))};[0..24].$sin($*$pi/12).$plot($))',
+      `
+(
+  $pi := 3.141592653589793;
+  $plot := function($x) {
+    (
+      $floor := $string ~> $substringBefore(?, ".") ~> $number;
+      $index := $floor(($x + 1) * 20 + 0.5);
+      $join([0..$index].(".")) & "O" & $join([$index..40].("."))
+    )
+  };
+  $product := function($a, $b) { $a * $b };
+  $factorial := function($n) { $n = 0 ? 1 : $reduce([1..$n], $product) };
+  $sin := function($x) { $cos($x - $pi / 2) };
+  $cos := function($x) {
+    $x > $pi
+      ? $cos($x - 2 * $pi)
+      : $x < -$pi
+        ? $cos($x + 2 * $pi)
+        : $sum([0..12].($power(-1, $) * $power($x, 2 * $) / $factorial(2 * $)))
+  };
+  [0..24].$sin($ * $pi / 12).$plot($)
 )
       `,
     ],
