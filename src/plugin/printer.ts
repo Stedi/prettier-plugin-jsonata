@@ -161,7 +161,31 @@ const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printCh
     return indent([softline, ".", printChildren(["steps", idx])]);
   });
 
-  return group(steps);
+  const pathGroup = node.group ? printPathNodeGroup(node, path, options, printChildren) : "";
+
+  return group([...steps, pathGroup]);
+};
+
+const printPathNodeGroup: PrintNodeFunction<PathNode> = (node, path, options, printChildren) => {
+  if (node.group === undefined) {
+    return "";
+  }
+
+  if (node.group.lhs.length === 0) {
+    return "{}";
+  }
+
+  const unaryTuples = node.group.lhs.map((tuple, idx) =>
+    group([printChildren(["group", "lhs", idx, 0]), ": ", printChildren(["group", "lhs", idx, 1])]),
+  );
+
+  const hasNestedObjectChildren = node.group.lhs.some(
+    (tuple) => tuple[1].type === "unary" && ["[", "{"].includes(tuple[1].value),
+  );
+  const linebreak = hasNestedObjectChildren ? [hardline, breakParent] : line;
+
+  const joinedUnaryTuples = join([",", linebreak], unaryTuples);
+  return group(["{", indent([linebreak, joinedUnaryTuples]), linebreak, "}"]);
 };
 
 type PrintFunctionNodeFunction = PrintNodeFunction<FunctionNode | PartialFunctionNode>;
@@ -343,8 +367,10 @@ const printUnaryTuplesForObjectUnaryNode: PrintNodeFunction<ObjectUnaryNode> = (
     group([printChildren(["lhs", idx, 0]), ": ", printChildren(["lhs", idx, 1])]),
   );
 
-  const hasNestedUnaryChildren = node.lhs.some((tuple) => tuple[1].type === "unary");
-  const linebreak = hasNestedUnaryChildren ? [hardline, breakParent] : line;
+  const hasNestedObjectChildren = node.lhs.some(
+    (tuple) => tuple[1].type === "unary" && ["[", "{"].includes(tuple[1].value),
+  );
+  const linebreak = hasNestedObjectChildren ? [hardline, breakParent] : line;
 
   const joinedUnaryTuples = join([",", linebreak], unaryTuples);
   return [indent([linebreak, joinedUnaryTuples]), linebreak];

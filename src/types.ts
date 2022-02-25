@@ -60,6 +60,9 @@ export interface PathNode extends Node {
   type: "path";
   steps: JsonataASTNode[];
   keepSingletonArray?: boolean;
+  group?: {
+    lhs: UnaryTuple[];
+  };
 }
 
 export interface BlockNode extends Node {
