@@ -44,6 +44,8 @@ describe("prettierPlugin", () => {
     ["-foo"],
     ["foo = 1"],
     ["foo.bar"],
+    ["foo.bar{}"],
+    ["foo.bar{ baz: boo }"],
     ["foo[bar = 1]"],
     ["foo[0]"],
     ["$"],

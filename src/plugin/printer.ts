@@ -161,7 +161,29 @@ const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printCh
     return indent([softline, ".", printChildren(["steps", idx])]);
   });
 
-  return group(steps);
+  const pathGroup = node.group ? printPathNodeGroup(node, path, options, printChildren) : "";
+
+  return group([...steps, pathGroup]);
+};
+
+const printPathNodeGroup: PrintNodeFunction<PathNode> = (node, path, options, printChildren) => {
+  if (node.group === undefined) {
+    return "";
+  }
+
+  if (node.group.lhs.length === 0) {
+    return "{}";
+  }
+
+  const unaryTuples = node.group.lhs.map((tuple, idx) =>
+    group([printChildren(["group", "lhs", idx, 0]), ": ", printChildren(["group", "lhs", idx, 1])]),
+  );
+
+  const hasNestedComplexUnaryNodeChildren = node.group.lhs.some((tuple) => isComplexUnaryNode(tuple[1]));
+  const linebreak = hasNestedComplexUnaryNodeChildren ? [hardline, breakParent] : line;
+
+  const joinedUnaryTuples = join([",", linebreak], unaryTuples);
+  return group(["{", indent([linebreak, joinedUnaryTuples]), linebreak, "}"]);
 };
 
 type PrintFunctionNodeFunction = PrintNodeFunction<FunctionNode | PartialFunctionNode>;
@@ -343,11 +365,31 @@ const printUnaryTuplesForObjectUnaryNode: PrintNodeFunction<ObjectUnaryNode> = (
     group([printChildren(["lhs", idx, 0]), ": ", printChildren(["lhs", idx, 1])]),
   );
 
-  const hasNestedUnaryChildren = node.lhs.some((tuple) => tuple[1].type === "unary");
-  const linebreak = hasNestedUnaryChildren ? [hardline, breakParent] : line;
+  const hasNestedComplexUnaryNodeChildren = node.lhs.some((tuple) => isComplexUnaryNode(tuple[1]));
+  const linebreak = hasNestedComplexUnaryNodeChildren ? [hardline, breakParent] : line;
 
   const joinedUnaryTuples = join([",", linebreak], unaryTuples);
   return [indent([linebreak, joinedUnaryTuples]), linebreak];
+};
+
+/**
+ * Returns true, if the provided `node` argument represents an Unary Node
+ * which could be considered complex ("negation" node is not considered context).
+ *
+ * This function can be used to decide which line break type to use based on AST tree complexity.
+ */
+const isComplexUnaryNode = (node: JsonataASTNode) => {
+  if (node.type !== "unary") {
+    return false;
+  }
+
+  if (node.value === "[") {
+    return true;
+  }
+
+  if (node.value === "{") {
+    return true;
+  }
 };
 
 const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, options, printChildren) => {
