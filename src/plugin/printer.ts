@@ -179,10 +179,8 @@ const printPathNodeGroup: PrintNodeFunction<PathNode> = (node, path, options, pr
     group([printChildren(["group", "lhs", idx, 0]), ": ", printChildren(["group", "lhs", idx, 1])]),
   );
 
-  const hasNestedObjectChildren = node.group.lhs.some(
-    (tuple) => tuple[1].type === "unary" && ["[", "{"].includes(tuple[1].value),
-  );
-  const linebreak = hasNestedObjectChildren ? [hardline, breakParent] : line;
+  const hasNestedComplexUnaryNodeChildren = node.group.lhs.some((tuple) => isComplexUnaryNode(tuple[1]));
+  const linebreak = hasNestedComplexUnaryNodeChildren ? [hardline, breakParent] : line;
 
   const joinedUnaryTuples = join([",", linebreak], unaryTuples);
   return group(["{", indent([linebreak, joinedUnaryTuples]), linebreak, "}"]);
@@ -367,13 +365,31 @@ const printUnaryTuplesForObjectUnaryNode: PrintNodeFunction<ObjectUnaryNode> = (
     group([printChildren(["lhs", idx, 0]), ": ", printChildren(["lhs", idx, 1])]),
   );
 
-  const hasNestedObjectChildren = node.lhs.some(
-    (tuple) => tuple[1].type === "unary" && ["[", "{"].includes(tuple[1].value),
-  );
-  const linebreak = hasNestedObjectChildren ? [hardline, breakParent] : line;
+  const hasNestedComplexUnaryNodeChildren = node.lhs.some((tuple) => isComplexUnaryNode(tuple[1]));
+  const linebreak = hasNestedComplexUnaryNodeChildren ? [hardline, breakParent] : line;
 
   const joinedUnaryTuples = join([",", linebreak], unaryTuples);
   return [indent([linebreak, joinedUnaryTuples]), linebreak];
+};
+
+/**
+ * Returns true, if the provided `node` argument represents an Unary Node
+ * which could be considered complex ("negation" node is not considered context).
+ *
+ * This function can be used to decide which line break type to use based on AST tree complexity.
+ */
+const isComplexUnaryNode = (node: JsonataASTNode) => {
+  if (node.type !== "unary") {
+    return false;
+  }
+
+  if (node.value === "[") {
+    return true;
+  }
+
+  if (node.value === "{") {
+    return true;
+  }
 };
 
 const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, options, printChildren) => {
