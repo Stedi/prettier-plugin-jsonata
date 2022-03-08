@@ -27,60 +27,84 @@ import type {
 } from "../types";
 import * as prettier from "prettier";
 import type { AstPath, Doc, Options, Printer } from "prettier";
+import { JsonataComment } from "./parser";
 
 // We have to redefine this type, because @types/prettier contain incorrect (reduced) version
 // of the type of the 3rd argument for Printer["print"]
 type PrintChildrenFunction = (selector?: string | number | Array<string | number> | AstPath) => Doc;
 
-export const print: Printer["print"] = (path, options, printChildren) => {
-  const node: JsonataASTNode = path.getValue();
-  const commonPrintArgs = [path, options, printChildren as PrintChildrenFunction] as const;
+let jsonataComments: JsonataComment[] = [];
+let previousNodePosition = -1;
 
-  if (node.type === "binary") {
-    return printBinaryNode(node, ...commonPrintArgs);
-  } else if (node.type === "function") {
-    return printFunctionNode(node, ...commonPrintArgs);
-  } else if (node.type === "partial") {
-    return printFunctionNode(node, ...commonPrintArgs);
-  } else if (node.type === "variable") {
-    return printVariableNode(node, ...commonPrintArgs);
-  } else if (node.type === "wildcard") {
-    return printWildcardNode(node, ...commonPrintArgs);
-  } else if (node.type === "descendant") {
-    return printDescendantNode(node, ...commonPrintArgs);
-  } else if (node.type === "operator") {
-    return printOperatorNode(node, ...commonPrintArgs);
-  } else if (node.type === "number") {
-    return printNumberNode(node, ...commonPrintArgs);
-  } else if (node.type === "string") {
-    return printStringNode(node, ...commonPrintArgs);
-  } else if (node.type === "name") {
-    return printNameNode(node, ...commonPrintArgs);
-  } else if (node.type === "filter") {
-    return printFilterNode(node, ...commonPrintArgs);
-  } else if (node.type === "bind") {
-    return printBindNode(node, ...commonPrintArgs);
-  } else if (node.type === "lambda") {
-    return printLambdaNode(node, ...commonPrintArgs);
-  } else if (node.type === "condition") {
-    return printConditionNode(node, ...commonPrintArgs);
-  } else if (node.type === "value") {
-    return printValueNode(node, ...commonPrintArgs);
-  } else if (node.type === "block") {
-    return printBlockNode(node, ...commonPrintArgs);
-  } else if (node.type === "path") {
-    return printPathNode(node, ...commonPrintArgs);
-  } else if (node.type === "apply") {
-    return printApplyNode(node, ...commonPrintArgs);
-  } else if (node.type === "sort") {
-    return printSortNode(node, ...commonPrintArgs);
-  } else if (node.type === "unary") {
-    return printUnaryNode(node, ...commonPrintArgs);
-  } else if (node.type === "parent") {
-    return printParentNode(node, ...commonPrintArgs);
+export const print: Printer["print"] = (path, options, printChildren) => {
+  const node: JsonataASTNode | (JsonataASTNode & { jsonataComments: JsonataComment[] }) = path.getValue();
+
+  if ("jsonataComments" in node) {
+    previousNodePosition = -1;
+    jsonataComments = node.jsonataComments;
   }
 
-  throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
+  const matchingComments = jsonataComments.filter(
+    (comment) => comment.position > previousNodePosition && comment.position < node.position,
+  );
+  if (typeof node.position === "number") {
+    previousNodePosition = node.position;
+  }
+
+  const commentsDoc = matchingComments.map(printComment);
+
+  // console.log({ jsonataComments, matchingComments, commentsDoc, nodePosition: node.position, nodeType: node.type });
+
+  const commonPrintArgs = [path, options, printChildren as PrintChildrenFunction] as const;
+
+  let result: Doc = "";
+  if (node.type === "binary") {
+    result = printBinaryNode(node, ...commonPrintArgs);
+  } else if (node.type === "function") {
+    result = printFunctionNode(node, ...commonPrintArgs);
+  } else if (node.type === "partial") {
+    result = printFunctionNode(node, ...commonPrintArgs);
+  } else if (node.type === "variable") {
+    result = printVariableNode(node, ...commonPrintArgs);
+  } else if (node.type === "wildcard") {
+    result = printWildcardNode(node, ...commonPrintArgs);
+  } else if (node.type === "descendant") {
+    result = printDescendantNode(node, ...commonPrintArgs);
+  } else if (node.type === "operator") {
+    result = printOperatorNode(node, ...commonPrintArgs);
+  } else if (node.type === "number") {
+    result = printNumberNode(node, ...commonPrintArgs);
+  } else if (node.type === "string") {
+    result = printStringNode(node, ...commonPrintArgs);
+  } else if (node.type === "name") {
+    result = printNameNode(node, ...commonPrintArgs);
+  } else if (node.type === "filter") {
+    result = printFilterNode(node, ...commonPrintArgs);
+  } else if (node.type === "bind") {
+    result = printBindNode(node, ...commonPrintArgs);
+  } else if (node.type === "lambda") {
+    result = printLambdaNode(node, ...commonPrintArgs);
+  } else if (node.type === "condition") {
+    result = printConditionNode(node, ...commonPrintArgs);
+  } else if (node.type === "value") {
+    result = printValueNode(node, ...commonPrintArgs);
+  } else if (node.type === "block") {
+    result = printBlockNode(node, ...commonPrintArgs);
+  } else if (node.type === "path") {
+    result = printPathNode(node, ...commonPrintArgs);
+  } else if (node.type === "apply") {
+    result = printApplyNode(node, ...commonPrintArgs);
+  } else if (node.type === "sort") {
+    result = printSortNode(node, ...commonPrintArgs);
+  } else if (node.type === "unary") {
+    result = printUnaryNode(node, ...commonPrintArgs);
+  } else if (node.type === "parent") {
+    result = printParentNode(node, ...commonPrintArgs);
+  } else {
+    throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
+  }
+
+  return [commentsDoc, result];
 };
 
 type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
@@ -91,6 +115,16 @@ type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
 ) => Doc;
 
 const { group, indent, join, line, hardline, breakParent, softline } = prettier.doc.builders;
+
+const printComment = (comment: JsonataComment): Doc => {
+  const commentBody = ["/* ", comment.value, " */"];
+
+  if (comment.position === 0) {
+    return group([commentBody, hardline]);
+  }
+
+  return group([hardline, commentBody, hardline]);
+};
 
 const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, printChildren) => {
   if (node.value === "..") {

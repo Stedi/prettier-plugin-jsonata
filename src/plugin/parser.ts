@@ -3,9 +3,24 @@ import type { JsonataError } from "jsonata";
 import type { JsonataASTNode } from "../types";
 import jsonata from "jsonata";
 
-export const parse: Parser<JsonataASTNode>["parse"] = (expression) => {
+export interface JsonataComment {
+  position: number;
+  value: string;
+}
+
+export const parse: Parser<JsonataASTNode & { jsonataComments: JsonataComment[] }>["parse"] = (expression) => {
   try {
-    return jsonata(expression).ast() as JsonataASTNode;
+    const jsonataComments: JsonataComment[] = [];
+    const matches = expression.matchAll(/\/\*((\*(?!\/)|[^*])*)\*\//g);
+    for (const match of matches) {
+      if (match.index === undefined) continue;
+      if (!match[1]) continue;
+
+      jsonataComments.push({ position: match.index, value: match[1].trim() });
+    }
+
+    const ast = jsonata(expression).ast() as JsonataASTNode;
+    return { ...ast, jsonataComments };
   } catch (e) {
     const error = e as JsonataError;
     const debugInfoKeys: Array<keyof JsonataError> = ["code", "position", "token"];

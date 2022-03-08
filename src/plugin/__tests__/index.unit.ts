@@ -621,6 +621,30 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%{ k: v } } }"`);
   });
 
+  test("preserves comments", () => {
+    let formatted = format(`/* look - I have a comment for you */ foo.bar.baz`);
+    expect(formatted).toMatchInlineSnapshot(`
+      "/* look - I have a comment for you */
+      foo
+        .bar
+        .baz"
+    `);
+
+    formatted = format(
+      `/* let's check this condition */ isConditionOk ? /* we should do the right thing */ ifYesDoThis() : /* we should do something else */ ifNoDoAnotherThing()`,
+    );
+    expect(formatted).toMatchInlineSnapshot(`
+      "/* let's check this condition */
+      isConditionOk
+        ?
+        /* we should do the right thing */
+        ifYesDoThis()
+        :
+        /* we should do something else */
+        ifNoDoAnotherThing()"
+    `);
+  });
+
   test.each([
     [
       "interchanges[0].groups[0].transaction_sets[0].heading.name_N1_loop[1].name_N1.identification_code_04",
