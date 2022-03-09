@@ -625,9 +625,7 @@ describe("prettierPlugin", () => {
     let formatted = format(`/* look - I have a comment for you */ foo.bar.baz`);
     expect(formatted).toMatchInlineSnapshot(`
       "/* look - I have a comment for you */
-      foo
-        .bar
-        .baz"
+      foo.bar.baz"
     `);
 
     formatted = format(
@@ -635,11 +633,9 @@ describe("prettierPlugin", () => {
     );
     expect(formatted).toMatchInlineSnapshot(`
       "/* let's check this condition */
-      isConditionOk
-        ?
+      isConditionOk ?
         /* we should do the right thing */
-        ifYesDoThis()
-        :
+        ifYesDoThis() :
         /* we should do something else */
         ifNoDoAnotherThing()"
     `);

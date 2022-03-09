@@ -114,16 +114,17 @@ type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
   printChildren: PrintChildrenFunction,
 ) => Doc;
 
-const { group, indent, join, line, hardline, breakParent, softline } = prettier.doc.builders;
+const { group, indent, join, line, hardline, hardlineWithoutBreakParent, breakParent, softline } =
+  prettier.doc.builders;
 
 const printComment = (comment: JsonataComment): Doc => {
   const commentBody = ["/* ", comment.value, " */"];
 
   if (comment.position === 0) {
-    return group([commentBody, hardline]);
+    return group([commentBody, hardlineWithoutBreakParent]);
   }
 
-  return group([hardline, commentBody, hardline]);
+  return group([hardlineWithoutBreakParent, commentBody, hardlineWithoutBreakParent]);
 };
 
 const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, printChildren) => {
