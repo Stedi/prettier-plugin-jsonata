@@ -103,8 +103,8 @@ const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, pri
 const printNameNode: PrintNodeFunction<NameNode> = (node, path, options, printChildren) => {
   return group([
     printEscapedNameNodeValue(node.value),
-    printNameNodeFocus(node),
-    printNameNodeIndex(node),
+    printNodeFocus(node),
+    printNodeIndex(node),
     printStages(node, path, options, printChildren),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
@@ -124,28 +124,24 @@ const printEscapedNameNodeValue = (name: string) => {
   return name;
 };
 
-const printNameNodeFocus = (node: NameNode) => {
-  if (!node.focus) {
-    return "";
-  }
-
-  return "@$" + node.focus;
-};
-
-const printNameNodeIndex = (node: NameNode) => {
-  if (!node.index) {
-    return "";
-  }
-
-  return "#$" + node.index;
-};
-
 const printNumberNode: PrintNodeFunction<NumberNode> = (node, path, options, printChildren) => {
-  return group([JSON.stringify(node.value), printPredicate(node, path, options, printChildren), printKeepArray(node)]);
+  return group([
+    JSON.stringify(node.value),
+    printNodeFocus(node),
+    printNodeIndex(node),
+    printPredicate(node, path, options, printChildren),
+    printKeepArray(node),
+  ]);
 };
 
 const printStringNode: PrintNodeFunction<StringNode> = (node, path, options, printChildren) => {
-  return group([JSON.stringify(node.value), printPredicate(node, path, options, printChildren), printKeepArray(node)]);
+  return group([
+    JSON.stringify(node.value),
+    printNodeFocus(node),
+    printNodeIndex(node),
+    printPredicate(node, path, options, printChildren),
+    printKeepArray(node),
+  ]);
 };
 
 const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printChildren) => {
@@ -193,6 +189,8 @@ const printFunctionNode: PrintFunctionNodeFunction = (node, path, options, print
     "(",
     printFunctionArguments(node, path, options, printChildren),
     ")",
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
@@ -216,6 +214,8 @@ const printVariableNode: PrintNodeFunction<VariableNode> = (node, path, options,
   return group([
     "$",
     node.value,
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
     printStages(node, path, options, printChildren),
@@ -254,6 +254,8 @@ const printLambdaNode: PrintNodeFunction<LambdaNode> = (node, path, options, pri
     indent([line, printChildren("body")]),
     line,
     "}",
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
@@ -274,6 +276,8 @@ const printConditionNode: PrintNodeFunction<ConditionNode> = (node, path, option
 const printValueNode: PrintNodeFunction<ValueNode> = (node, path, options, printChildren) => {
   return group([
     printValueNodeValue(node, path, options, printChildren),
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
@@ -297,6 +301,8 @@ const printBlockNode: PrintNodeFunction<BlockNode> = (node, path, options, print
       "(",
       printChildren(["expressions", 0]),
       ")",
+      printNodeFocus(node),
+      printNodeIndex(node),
       printPredicate(node, path, options, printChildren),
       printKeepArray(node),
     ]);
@@ -308,6 +314,8 @@ const printBlockNode: PrintNodeFunction<BlockNode> = (node, path, options, print
     indent([hardline, joinedExpressions]),
     hardline,
     ")",
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
@@ -351,6 +359,8 @@ const printObjectUnaryNode: PrintNodeFunction<ObjectUnaryNode> = (node, path, op
     "{",
     printUnaryTuplesForObjectUnaryNode(node, path, options, printChildren),
     "}",
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
@@ -400,6 +410,8 @@ const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, opti
     indent([softline, joinedExpressions]),
     softline,
     "]",
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
@@ -412,10 +424,28 @@ const printNegationUnaryNode: PrintNodeFunction<NegationUnaryNode> = (node, path
 const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, printChildren) => {
   return group([
     "%",
+    printNodeFocus(node),
+    printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
     printStages(node, path, options, printChildren),
   ]);
+};
+
+const printNodeFocus = (node: JsonataASTNode) => {
+  if (!node.focus) {
+    return "";
+  }
+
+  return "@$" + node.focus;
+};
+
+const printNodeIndex = (node: JsonataASTNode) => {
+  if (!node.index) {
+    return "";
+  }
+
+  return "#$" + node.index;
 };
 
 const printPredicate: PrintNodeFunction = (node, path, options, printChildren) => {
