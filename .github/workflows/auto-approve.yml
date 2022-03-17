@@ -11,4 +11,4 @@ jobs:
           github.actor == 'dependabot-preview' ||
           github.actor == 'mergify[bot]'
         with:
-          github-token: ${{ secrets.ENG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.PACKAGE_GITHUB_TOKEN }}
