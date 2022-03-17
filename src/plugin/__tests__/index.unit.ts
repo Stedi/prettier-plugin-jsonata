@@ -629,15 +629,17 @@ describe("prettierPlugin", () => {
     `);
 
     formatted = format(
-      `/* let's check this condition */ isConditionOk ? /* we should do the right thing */ ifYesDoThis() : /* we should do something else */ ifNoDoAnotherThing()`,
+      `/* let's check this condition */ isConditionOk ? /* we should do the right thing */ $ifYesDoThis() : /* we should do something else */ $ifNoDoAnotherThing()`,
     );
     expect(formatted).toMatchInlineSnapshot(`
       "/* let's check this condition */
-      isConditionOk ?
+      isConditionOk
+        ?
         /* we should do the right thing */
-        ifYesDoThis() :
+        $ifYesDoThis()
+        :
         /* we should do something else */
-        ifNoDoAnotherThing()"
+        $ifNoDoAnotherThing()"
     `);
   });
 

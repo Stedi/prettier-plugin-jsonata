@@ -44,12 +44,16 @@ export const print: Printer["print"] = (path, options, printChildren) => {
     jsonataComments = node.jsonataComments;
   }
 
-  const matchingComments = jsonataComments.filter(
-    (comment) => comment.position > previousNodePosition && comment.position < node.position,
+  console.log(
+    `checking for comments on node at position=${node.position} and type=${node.type}, previousNodePosition=${previousNodePosition}`,
   );
-  if (typeof node.position === "number") {
-    previousNodePosition = node.position;
-  }
+
+  const nodePosition = (node.type === "path" ? node.steps[0]?.position : node.position) ?? previousNodePosition;
+
+  const matchingComments = jsonataComments.filter(
+    (comment) => comment.position > previousNodePosition && comment.position < nodePosition,
+  );
+  previousNodePosition = nodePosition;
 
   const commentsDoc = matchingComments.map(printComment);
 
@@ -104,7 +108,17 @@ export const print: Printer["print"] = (path, options, printChildren) => {
     throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
   }
 
-  return [commentsDoc, result];
+  if (commentsDoc.length > 0) {
+    console.log(`attaching comment to node at position=${node.position} and type=${node.type}`);
+    result = group([commentsDoc, result]);
+  }
+
+  console.log(prettier.doc.debug.printDocToDebug(result));
+  console.log(
+    prettier.doc.printer.printDocToString(result, { tabWidth: 2, useTabs: false, printWidth: 150 }).formatted,
+  );
+
+  return result;
 };
 
 type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
@@ -114,17 +128,18 @@ type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
   printChildren: PrintChildrenFunction,
 ) => Doc;
 
-const { group, indent, join, line, hardline, hardlineWithoutBreakParent, breakParent, softline } =
-  prettier.doc.builders;
+const { group, indent, join, line, hardline, breakParent, softline } = prettier.doc.builders;
 
 const printComment = (comment: JsonataComment): Doc => {
   const commentBody = ["/* ", comment.value, " */"];
 
+  const linebreak = hardline;
+
   if (comment.position === 0) {
-    return group([commentBody, hardlineWithoutBreakParent]);
+    return group([...commentBody, linebreak]);
   }
 
-  return group([hardlineWithoutBreakParent, commentBody, hardlineWithoutBreakParent]);
+  return group([linebreak, ...commentBody, linebreak]);
 };
 
 const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, printChildren) => {
