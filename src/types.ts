@@ -3,6 +3,9 @@ export interface Node {
   value: unknown;
   predicate?: JsonataASTNode[];
   keepArray?: boolean;
+  focus?: string;
+  index?: string;
+  tuple?: true;
 }
 
 export interface NumberNode extends Node {
@@ -124,9 +127,6 @@ export interface NameNode extends Node {
   type: "name";
   value: string;
   stages?: JsonataASTNode[];
-  focus?: string;
-  index?: string;
-  tuple?: true;
 }
 
 export interface WildcardNode extends Node {

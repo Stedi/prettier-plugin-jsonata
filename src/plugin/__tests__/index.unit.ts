@@ -68,6 +68,15 @@ describe("prettierPlugin", () => {
     ["loans@$foo#$bar"],
     ["loans@$foo"],
     ["loans#$bar"],
+    ["(loans)#$bar"],
+    ["(loans)@$bar"],
+    ["(loans)@$foo#$bar"],
+    ["$$@$foo#$bar"],
+    ["$$@$foo"],
+    ["$$#$bar"],
+    ["$foo()@$foo#$bar"],
+    ["$foo()@$foo"],
+    ["$foo()#$bar"],
     ["foo - bar"],
     ["foo + bar"],
     ["foo / bar"],
@@ -511,6 +520,56 @@ describe("prettierPlugin", () => {
 
     formatted = format(`foo.{ "foo": bar.{ "bar": %.%[] } }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%[] } }"`);
+  });
+
+  test("handles index and focus on the majority of node types", () => {
+    let formatted = format(`foo@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"foo@$j#$i"`);
+
+    formatted = format(`foo.bar@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.bar@$j#$i"`);
+
+    formatted = format(`foo@$j#$i.bar`);
+    expect(formatted).toMatchInlineSnapshot(`"foo@$j#$i.bar"`);
+
+    formatted = format(`$foo@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"$foo@$j#$i"`);
+
+    formatted = format(`"foo"@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"\\"foo\\"@$j#$i"`);
+
+    formatted = format(`123@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"123@$j#$i"`);
+
+    formatted = format(`true@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"true@$j#$i"`);
+
+    formatted = format(`null@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"null@$j#$i"`);
+
+    formatted = format(`foo(bar)@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"foo(bar)@$j#$i"`);
+
+    formatted = format(`{ "foo": bar }@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": bar }@$j#$i"`);
+
+    formatted = format(`[foo, bar]@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"[foo, bar]@$j#$i"`);
+
+    formatted = format(`(foo)@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"(foo)@$j#$i"`);
+
+    formatted = format(`foo()@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"foo()@$j#$i"`);
+
+    formatted = format(`function() { foo }@$j#$i`);
+    expect(formatted).toMatchInlineSnapshot(`"function() { foo }@$j#$i"`);
+
+    formatted = format(`foo.{ "foo": %@$j#$i }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": %@$j#$i }"`);
+
+    formatted = format(`foo.{ "foo": bar.{ "bar": %.%@$j#$i } }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%@$j#$i } }"`);
   });
 
   test.each([
