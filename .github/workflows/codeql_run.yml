@@ -13,4 +13,4 @@ jobs:
   CodeQL:
     uses: stedi/substrate-codeql/.github/workflows/codeql_run.yml@main
     secrets:
-      ENG_GITHUB_TOKEN: ${{ secrets.ENG_GITHUB_TOKEN }}
+      ENG_GITHUB_TOKEN: ${{ secrets.PACKAGE_GITHUB_TOKEN }}
