@@ -6,6 +6,9 @@ export interface Node {
   focus?: string;
   index?: string;
   tuple?: true;
+  group?: {
+    lhs: UnaryTuple[];
+  };
 }
 
 export interface NumberNode extends Node {
@@ -63,9 +66,6 @@ export interface PathNode extends Node {
   type: "path";
   steps: JsonataASTNode[];
   keepSingletonArray?: boolean;
-  group?: {
-    lhs: UnaryTuple[];
-  };
 }
 
 export interface BlockNode extends Node {

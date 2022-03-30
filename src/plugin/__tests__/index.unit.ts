@@ -52,6 +52,8 @@ describe("prettierPlugin", () => {
     ["$.foo"],
     ["$$"],
     ["$$.foo"],
+    ["${ k: v }"],
+    ["$${ k: v }"],
     ["$foo"],
     ["-$foo"],
     ["$foo()"],
@@ -570,6 +572,53 @@ describe("prettierPlugin", () => {
 
     formatted = format(`foo.{ "foo": bar.{ "bar": %.%@$j#$i } }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%@$j#$i } }"`);
+  });
+
+  test("handles grouping on the majority of node types", () => {
+    let formatted = format(`foo{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo{ k: v }"`);
+
+    formatted = format(`foo.bar{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.bar{ k: v }"`);
+
+    formatted = format(`$foo{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"$foo{ k: v }"`);
+
+    formatted = format(`"foo"{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"\\"foo\\"{ k: v }"`);
+
+    formatted = format(`123{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"123{ k: v }"`);
+
+    formatted = format(`true{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"true{ k: v }"`);
+
+    formatted = format(`null{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"null{ k: v }"`);
+
+    formatted = format(`foo(bar){ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo(bar){ k: v }"`);
+
+    formatted = format(`{ "foo": bar }{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": bar }{ k: v }"`);
+
+    formatted = format(`[foo, bar]{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"[foo, bar]{ k: v }"`);
+
+    formatted = format(`(foo){ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"(foo){ k: v }"`);
+
+    formatted = format(`foo(){ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo(){ k: v }"`);
+
+    formatted = format(`function() { foo }{ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"function() { foo }{ k: v }"`);
+
+    formatted = format(`foo.{ "foo": %{ k: v } }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": %{ k: v } }"`);
+
+    formatted = format(`foo.{ "foo": bar.{ "bar": %.%{ k: v } } }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%{ k: v } } }"`);
   });
 
   test.each([

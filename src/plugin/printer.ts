@@ -103,6 +103,7 @@ const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, pri
 const printNameNode: PrintNodeFunction<NameNode> = (node, path, options, printChildren) => {
   return group([
     printEscapedNameNodeValue(node.value),
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printStages(node, path, options, printChildren),
@@ -127,6 +128,7 @@ const printEscapedNameNodeValue = (name: string) => {
 const printNumberNode: PrintNodeFunction<NumberNode> = (node, path, options, printChildren) => {
   return group([
     JSON.stringify(node.value),
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -137,6 +139,7 @@ const printNumberNode: PrintNodeFunction<NumberNode> = (node, path, options, pri
 const printStringNode: PrintNodeFunction<StringNode> = (node, path, options, printChildren) => {
   return group([
     JSON.stringify(node.value),
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -157,29 +160,7 @@ const printPathNode: PrintNodeFunction<PathNode> = (node, path, options, printCh
     return indent([softline, ".", printChildren(["steps", idx])]);
   });
 
-  const pathGroup = node.group ? printPathNodeGroup(node, path, options, printChildren) : "";
-
-  return group([...steps, pathGroup]);
-};
-
-const printPathNodeGroup: PrintNodeFunction<PathNode> = (node, path, options, printChildren) => {
-  if (node.group === undefined) {
-    return "";
-  }
-
-  if (node.group.lhs.length === 0) {
-    return "{}";
-  }
-
-  const unaryTuples = node.group.lhs.map((tuple, idx) =>
-    group([printChildren(["group", "lhs", idx, 0]), ": ", printChildren(["group", "lhs", idx, 1])]),
-  );
-
-  const hasNestedComplexUnaryNodeChildren = node.group.lhs.some((tuple) => isComplexUnaryNode(tuple[1]));
-  const linebreak = hasNestedComplexUnaryNodeChildren ? [hardline, breakParent] : line;
-
-  const joinedUnaryTuples = join([",", linebreak], unaryTuples);
-  return group(["{", indent([linebreak, joinedUnaryTuples]), linebreak, "}"]);
+  return group([...steps, printNodeGroup(node, path, options, printChildren)]);
 };
 
 type PrintFunctionNodeFunction = PrintNodeFunction<FunctionNode | PartialFunctionNode>;
@@ -189,6 +170,7 @@ const printFunctionNode: PrintFunctionNodeFunction = (node, path, options, print
     "(",
     printFunctionArguments(node, path, options, printChildren),
     ")",
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -214,6 +196,7 @@ const printVariableNode: PrintNodeFunction<VariableNode> = (node, path, options,
   return group([
     "$",
     node.value,
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -254,6 +237,7 @@ const printLambdaNode: PrintNodeFunction<LambdaNode> = (node, path, options, pri
     indent([line, printChildren("body")]),
     line,
     "}",
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -276,6 +260,7 @@ const printConditionNode: PrintNodeFunction<ConditionNode> = (node, path, option
 const printValueNode: PrintNodeFunction<ValueNode> = (node, path, options, printChildren) => {
   return group([
     printValueNodeValue(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -301,6 +286,7 @@ const printBlockNode: PrintNodeFunction<BlockNode> = (node, path, options, print
       "(",
       printChildren(["expressions", 0]),
       ")",
+      printNodeGroup(node, path, options, printChildren),
       printNodeFocus(node),
       printNodeIndex(node),
       printPredicate(node, path, options, printChildren),
@@ -314,6 +300,7 @@ const printBlockNode: PrintNodeFunction<BlockNode> = (node, path, options, print
     indent([hardline, joinedExpressions]),
     hardline,
     ")",
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -359,6 +346,7 @@ const printObjectUnaryNode: PrintNodeFunction<ObjectUnaryNode> = (node, path, op
     "{",
     printUnaryTuplesForObjectUnaryNode(node, path, options, printChildren),
     "}",
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -410,6 +398,7 @@ const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, opti
     indent([softline, joinedExpressions]),
     softline,
     "]",
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -424,6 +413,7 @@ const printNegationUnaryNode: PrintNodeFunction<NegationUnaryNode> = (node, path
 const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, printChildren) => {
   return group([
     "%",
+    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
@@ -469,4 +459,24 @@ const printKeepArray = (node: JsonataASTNode) => {
     return "";
   }
   return "[]";
+};
+
+const printNodeGroup: PrintNodeFunction = (node, path, options, printChildren) => {
+  if (node.group === undefined) {
+    return "";
+  }
+
+  if (node.group.lhs.length === 0) {
+    return "{}";
+  }
+
+  const unaryTuples = node.group.lhs.map((tuple, idx) =>
+    group([printChildren(["group", "lhs", idx, 0]), ": ", printChildren(["group", "lhs", idx, 1])]),
+  );
+
+  const hasNestedComplexUnaryNodeChildren = node.group.lhs.some((tuple) => isComplexUnaryNode(tuple[1]));
+  const linebreak = hasNestedComplexUnaryNodeChildren ? [hardline, breakParent] : line;
+
+  const joinedUnaryTuples = join([",", linebreak], unaryTuples);
+  return group(["{", indent([linebreak, joinedUnaryTuples]), linebreak, "}"]);
 };
