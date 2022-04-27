@@ -108,9 +108,9 @@ const printNode: PrintNodeFunction = (node, ...commonPrintArgs) => {
     return printUnaryNode(node, ...commonPrintArgs);
   } else if (node.type === "parent") {
     return printParentNode(node, ...commonPrintArgs);
-  } else {
-    throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
   }
+
+  throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
 };
 
 type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
