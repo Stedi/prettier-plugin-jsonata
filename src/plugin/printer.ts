@@ -32,12 +32,16 @@ import { JsonataComment } from "./parser";
 // We have to redefine this type, because @types/prettier contain incorrect (reduced) version
 // of the type of the 3rd argument for Printer["print"]
 type PrintChildrenFunction = (selector?: string | number | Array<string | number> | AstPath) => Doc;
+type JsonataASTNodeWithComments = JsonataASTNode | (JsonataASTNode & { jsonataComments: JsonataComment[] });
 
+// Due to the nature of the prettier printer API and the lack of proper support for comments in Jsonata AST,
+// we have to populate `jsonataComments` from within the initial `print` function call,
+// and then track `previousNodePosition` position to know when to print comments.
 let jsonataComments: JsonataComment[] = [];
 let previousNodePosition = -1;
 
 export const print: Printer["print"] = (path, options, printChildren) => {
-  const node: JsonataASTNode | (JsonataASTNode & { jsonataComments: JsonataComment[] }) = path.getValue();
+  const node: JsonataASTNodeWithComments = path.getValue();
 
   if ("jsonataComments" in node) {
     previousNodePosition = -1;
@@ -52,61 +56,61 @@ export const print: Printer["print"] = (path, options, printChildren) => {
   previousNodePosition = nodePosition;
 
   const commentsDoc = matchingComments.map(printComment);
-
-  const commonPrintArgs = [path, options, printChildren as PrintChildrenFunction] as const;
-
-  let result: Doc = "";
-  if (node.type === "binary") {
-    result = printBinaryNode(node, ...commonPrintArgs);
-  } else if (node.type === "function") {
-    result = printFunctionNode(node, ...commonPrintArgs);
-  } else if (node.type === "partial") {
-    result = printFunctionNode(node, ...commonPrintArgs);
-  } else if (node.type === "variable") {
-    result = printVariableNode(node, ...commonPrintArgs);
-  } else if (node.type === "wildcard") {
-    result = printWildcardNode(node, ...commonPrintArgs);
-  } else if (node.type === "descendant") {
-    result = printDescendantNode(node, ...commonPrintArgs);
-  } else if (node.type === "operator") {
-    result = printOperatorNode(node, ...commonPrintArgs);
-  } else if (node.type === "number") {
-    result = printNumberNode(node, ...commonPrintArgs);
-  } else if (node.type === "string") {
-    result = printStringNode(node, ...commonPrintArgs);
-  } else if (node.type === "name") {
-    result = printNameNode(node, ...commonPrintArgs);
-  } else if (node.type === "filter") {
-    result = printFilterNode(node, ...commonPrintArgs);
-  } else if (node.type === "bind") {
-    result = printBindNode(node, ...commonPrintArgs);
-  } else if (node.type === "lambda") {
-    result = printLambdaNode(node, ...commonPrintArgs);
-  } else if (node.type === "condition") {
-    result = printConditionNode(node, ...commonPrintArgs);
-  } else if (node.type === "value") {
-    result = printValueNode(node, ...commonPrintArgs);
-  } else if (node.type === "block") {
-    result = printBlockNode(node, ...commonPrintArgs);
-  } else if (node.type === "path") {
-    result = printPathNode(node, ...commonPrintArgs);
-  } else if (node.type === "apply") {
-    result = printApplyNode(node, ...commonPrintArgs);
-  } else if (node.type === "sort") {
-    result = printSortNode(node, ...commonPrintArgs);
-  } else if (node.type === "unary") {
-    result = printUnaryNode(node, ...commonPrintArgs);
-  } else if (node.type === "parent") {
-    result = printParentNode(node, ...commonPrintArgs);
-  } else {
-    throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
-  }
+  const result = printNode(node, path, options, printChildren as PrintChildrenFunction);
 
   if (commentsDoc.length > 0) {
-    result = group([commentsDoc, result]);
+    return group([commentsDoc, result]);
   }
 
   return result;
+};
+
+const printNode: PrintNodeFunction = (node, ...commonPrintArgs) => {
+  if (node.type === "binary") {
+    return printBinaryNode(node, ...commonPrintArgs);
+  } else if (node.type === "function") {
+    return printFunctionNode(node, ...commonPrintArgs);
+  } else if (node.type === "partial") {
+    return printFunctionNode(node, ...commonPrintArgs);
+  } else if (node.type === "variable") {
+    return printVariableNode(node, ...commonPrintArgs);
+  } else if (node.type === "wildcard") {
+    return printWildcardNode(node, ...commonPrintArgs);
+  } else if (node.type === "descendant") {
+    return printDescendantNode(node, ...commonPrintArgs);
+  } else if (node.type === "operator") {
+    return printOperatorNode(node, ...commonPrintArgs);
+  } else if (node.type === "number") {
+    return printNumberNode(node, ...commonPrintArgs);
+  } else if (node.type === "string") {
+    return printStringNode(node, ...commonPrintArgs);
+  } else if (node.type === "name") {
+    return printNameNode(node, ...commonPrintArgs);
+  } else if (node.type === "filter") {
+    return printFilterNode(node, ...commonPrintArgs);
+  } else if (node.type === "bind") {
+    return printBindNode(node, ...commonPrintArgs);
+  } else if (node.type === "lambda") {
+    return printLambdaNode(node, ...commonPrintArgs);
+  } else if (node.type === "condition") {
+    return printConditionNode(node, ...commonPrintArgs);
+  } else if (node.type === "value") {
+    return printValueNode(node, ...commonPrintArgs);
+  } else if (node.type === "block") {
+    return printBlockNode(node, ...commonPrintArgs);
+  } else if (node.type === "path") {
+    return printPathNode(node, ...commonPrintArgs);
+  } else if (node.type === "apply") {
+    return printApplyNode(node, ...commonPrintArgs);
+  } else if (node.type === "sort") {
+    return printSortNode(node, ...commonPrintArgs);
+  } else if (node.type === "unary") {
+    return printUnaryNode(node, ...commonPrintArgs);
+  } else if (node.type === "parent") {
+    return printParentNode(node, ...commonPrintArgs);
+  } else {
+    throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
+  }
 };
 
 type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
