@@ -11,12 +11,15 @@ export interface JsonataComment {
 export const parse: Parser<JsonataASTNode & { jsonataComments: JsonataComment[] }>["parse"] = (expression) => {
   try {
     const jsonataComments: JsonataComment[] = [];
-    const matches = expression.matchAll(/\/\*((\*(?!\/)|[^*])*)\*\//g);
-    for (const match of matches) {
-      if (match.index === undefined) continue;
-      if (!match[1]) continue;
+    const commentMatches = expression.matchAll(/\/\*((\*(?!\/)|[^*])*)\*\//g);
+    for (const commentMatch of commentMatches) {
+      const matchedCommentPosition = commentMatch.index;
+      if (matchedCommentPosition === undefined) continue;
 
-      jsonataComments.push({ position: match.index, value: match[1].trim() });
+      const matchedCommentBody = commentMatch[1];
+      if (!matchedCommentBody) continue;
+
+      jsonataComments.push({ position: matchedCommentPosition, value: matchedCommentBody.trim() });
     }
 
     const ast = jsonata(expression).ast() as JsonataASTNode;
