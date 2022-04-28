@@ -27,15 +27,45 @@ import type {
 } from "../types";
 import * as prettier from "prettier";
 import type { AstPath, Doc, Options, Printer } from "prettier";
+import { JsonataComment } from "./parser";
 
 // We have to redefine this type, because @types/prettier contain incorrect (reduced) version
 // of the type of the 3rd argument for Printer["print"]
 type PrintChildrenFunction = (selector?: string | number | Array<string | number> | AstPath) => Doc;
+type JsonataASTNodeWithComments = JsonataASTNode | (JsonataASTNode & { jsonataComments: JsonataComment[] });
+
+// Due to the nature of the prettier printer API and the lack of proper support for comments in Jsonata AST,
+// we have to populate `jsonataComments` from within the initial `print` function call,
+// and then track `previousNodePosition` position to know when to print comments.
+let jsonataComments: JsonataComment[] = [];
+let previousNodePosition = -1;
 
 export const print: Printer["print"] = (path, options, printChildren) => {
-  const node: JsonataASTNode = path.getValue();
-  const commonPrintArgs = [path, options, printChildren as PrintChildrenFunction] as const;
+  const node: JsonataASTNodeWithComments = path.getValue();
 
+  if ("jsonataComments" in node) {
+    previousNodePosition = -1;
+    jsonataComments = node.jsonataComments;
+  }
+
+  const nodePosition = (node.type === "path" ? node.steps[0]?.position : node.position) ?? previousNodePosition;
+
+  const matchingComments = jsonataComments.filter(
+    (comment) => comment.position > previousNodePosition && comment.position < nodePosition,
+  );
+  previousNodePosition = nodePosition;
+
+  const commentsDoc = matchingComments.map(printComment);
+  const result = printNode(node, path, options, printChildren as PrintChildrenFunction);
+
+  if (commentsDoc.length > 0) {
+    return group([commentsDoc, result]);
+  }
+
+  return result;
+};
+
+const printNode: PrintNodeFunction = (node, ...commonPrintArgs) => {
   if (node.type === "binary") {
     return printBinaryNode(node, ...commonPrintArgs);
   } else if (node.type === "function") {
@@ -91,6 +121,10 @@ type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
 ) => Doc;
 
 const { group, indent, join, line, hardline, breakParent, softline } = prettier.doc.builders;
+
+const printComment = (comment: JsonataComment): Doc => {
+  return group(["/* ", comment.value, " */", hardline]);
+};
 
 const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, printChildren) => {
   if (node.value === "..") {

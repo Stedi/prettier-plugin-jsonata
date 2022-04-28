@@ -621,6 +621,26 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%{ k: v } } }"`);
   });
 
+  test("preserves comments", () => {
+    let formatted = format(`/* look - I have a comment for you */ foo.bar.baz`);
+    expect(formatted).toMatchInlineSnapshot(`
+      "/* look - I have a comment for you */
+      foo.bar.baz"
+    `);
+
+    formatted = format(
+      `/* let's check this condition */ isConditionOk ? /* we should do the right thing */ $ifYesDoThis() : /* we should do something else */ $ifNoDoAnotherThing()`,
+    );
+    expect(formatted).toMatchInlineSnapshot(`
+      "/* let's check this condition */
+      isConditionOk
+        ? /* we should do the right thing */
+        $ifYesDoThis()
+        : /* we should do something else */
+        $ifNoDoAnotherThing()"
+    `);
+  });
+
   test.each([
     [
       "interchanges[0].groups[0].transaction_sets[0].heading.name_N1_loop[1].name_N1.identification_code_04",
@@ -725,10 +745,12 @@ $filter(
       `,
     ],
     [
-      '($pi := 3.141592653589793;$plot := function($x) {($floor := $string ~> $substringBefore(?, ".") ~> $number;$index := $floor(($x + 1) * 20 + 0.5);$join([0..$index].(".")) & "O" & $join([$index..40].(".")))};$product := function($a, $b) { $a * $b };$factorial := function($n) { $n = 0 ? 1 : $reduce([1..$n], $product) };$sin := function($x){$cos($x - $pi/2)};$cos := function($x){$x > $pi ? $cos($x - 2 * $pi) : $x < -$pi ? $cos($x + 2 * $pi) :$sum([0..12].($power(-1, $) * $power($x, 2*$) / $factorial(2*$)))};[0..24].$sin($*$pi/12).$plot($))',
+      '/* Long-winded expressions might need some explanation */ ($pi := 3.141592653589793;/* JSONata is not known for its graphics support! */$plot := function($x) {($floor := $string ~> $substringBefore(?, ".") ~> $number;$index := $floor(($x + 1) * 20 + 0.5);$join([0..$index].(".")) & "O" & $join([$index..40].(".")))}; /* Factorial is the product of the integers 1..n */ $product := function($a, $b) { $a * $b };$factorial := function($n) { $n = 0 ? 1 : $reduce([1..$n], $product) };$sin := function($x){/* define sine in terms of cosine */ $cos($x - $pi/2)};$cos := function($x){/* Derive cosine by expanding Maclaurin series */ $x > $pi ? $cos($x - 2 * $pi) : $x < -$pi ? $cos($x + 2 * $pi) :$sum([0..12].($power(-1, $) * $power($x, 2*$) / $factorial(2*$)))};[0..24].$sin($*$pi/12).$plot($))',
       `
+/* Long-winded expressions might need some explanation */
 (
   $pi := 3.141592653589793;
+  /* JSONata is not known for its graphics support! */
   $plot := function($x) {
     (
       $floor := $string ~> $substringBefore(?, ".") ~> $number;
@@ -736,10 +758,15 @@ $filter(
       $join([0..$index].(".")) & "O" & $join([$index..40].("."))
     )
   };
+  /* Factorial is the product of the integers 1..n */
   $product := function($a, $b) { $a * $b };
   $factorial := function($n) { $n = 0 ? 1 : $reduce([1..$n], $product) };
-  $sin := function($x) { $cos($x - $pi / 2) };
+  $sin := function($x) {
+    /* define sine in terms of cosine */
+    $cos($x - $pi / 2)
+  };
   $cos := function($x) {
+    /* Derive cosine by expanding Maclaurin series */
     $x > $pi
       ? $cos($x - 2 * $pi)
       : $x < -$pi
