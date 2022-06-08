@@ -71,6 +71,7 @@ export interface PathNode extends Node {
 export interface BlockNode extends Node {
   type: "block";
   expressions: JsonataASTNode[];
+  stages?: JsonataASTNode[];
 }
 
 export interface ApplyNode extends Node {
