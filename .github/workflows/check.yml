@@ -21,10 +21,10 @@ jobs:
           max_attempts: 3
           command: npm ci
         env:
-          GITHUB_TOKEN: ${{secrets.PACKAGE_GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
       - run: npm run build
         env:
-          GITHUB_TOKEN: ${{secrets.PACKAGE_GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
       - uses: crazy-max/ghaction-import-gpg@v3
         with:
           gpg-private-key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
@@ -34,4 +34,4 @@ jobs:
         id: import_gpg
       - run: npm run check
         env:
-          GITHUB_TOKEN: ${{secrets.PACKAGE_GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}

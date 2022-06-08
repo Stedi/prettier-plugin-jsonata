@@ -461,6 +461,9 @@ describe("prettierPlugin", () => {
     formatted = format(`(foo)[0]`);
     expect(formatted).toMatchInlineSnapshot(`"(foo)[0]"`);
 
+    formatted = format(`foo.(bar)[0]`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.(bar)[0]"`);
+
     formatted = format(`foo()[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo()[0]"`);
 
@@ -510,6 +513,9 @@ describe("prettierPlugin", () => {
 
     formatted = format(`(foo)[]`);
     expect(formatted).toMatchInlineSnapshot(`"(foo)[]"`);
+
+    formatted = format(`foo.(bar)[]`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.(bar)[]"`);
 
     formatted = format(`foo()[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo()[]"`);
@@ -607,6 +613,9 @@ describe("prettierPlugin", () => {
 
     formatted = format(`(foo){ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"(foo){ k: v }"`);
+
+    formatted = format(`foo.(bar){ k: v }`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.(bar){ k: v }"`);
 
     formatted = format(`foo(){ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"foo(){ k: v }"`);
