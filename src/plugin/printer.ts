@@ -136,7 +136,7 @@ const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, pri
 
 const printNameNode: PrintNodeFunction<NameNode> = (node, path, options, printChildren) => {
   return group([
-    escapeName(node.value),
+    printEscapedNameNodeValue(node.value),
     printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
@@ -508,7 +508,7 @@ const printNodeGroup: PrintNodeFunction = (node, path, options, printChildren) =
   return group(["{", indent([linebreak, joinedUnaryTuples]), linebreak, "}"]);
 };
 
-const escapeName = (value: string): string => {
+const printEscapedNameNodeValue = (value: string): string => {
   if (value.startsWith("`") && value.endsWith("`")) {
     // If it's already wrapped in backticks - skip escaping logic below
     return value;
