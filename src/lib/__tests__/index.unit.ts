@@ -21,6 +21,14 @@ describe(serializeJsonata, () => {
 )`);
   });
 
+  test("preserves backticks when serializing", () => {
+    const jsonataString = "foo.`bar.0.baz`";
+    const jsonataAST = jsonata(jsonataString).ast() as JsonataASTNode;
+
+    const formattedJsonataString = serializeJsonata(jsonataAST);
+    expect(formattedJsonataString).toEqual("foo.`bar.0.baz`");
+  });
+
   test("clears prettier cache between operations and prevents context leaks between serialization attempts", () => {
     let jsonataAST = jsonata('$$.new.context.path.{ "key": "value" }').ast() as JsonataASTNode;
     let serializedJsonataAST = serializeJsonata(jsonataAST);
