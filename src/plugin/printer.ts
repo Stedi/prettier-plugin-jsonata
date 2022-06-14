@@ -136,7 +136,7 @@ const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, pri
 
 const printNameNode: PrintNodeFunction<NameNode> = (node, path, options, printChildren) => {
   return group([
-    printEscapedNameNodeValue(node.value),
+    escapeName(node.value),
     printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
@@ -144,19 +144,6 @@ const printNameNode: PrintNodeFunction<NameNode> = (node, path, options, printCh
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
   ]);
-};
-
-const printEscapedNameNodeValue = (name: string) => {
-  const containsWhitespace = /\s/.test(name);
-  const conflictsWithReservedWords = ["null", "false", "true"].includes(name);
-  const startsWithNumber = /^\d/.test(name);
-  const containsUnsafeChars = /^[a-zA-Z\d()._]+$/.test(name) === false;
-
-  if (containsWhitespace || conflictsWithReservedWords || startsWithNumber || containsUnsafeChars) {
-    return "`" + name + "`";
-  }
-
-  return name;
 };
 
 const printNumberNode: PrintNodeFunction<NumberNode> = (node, path, options, printChildren) => {
@@ -519,4 +506,54 @@ const printNodeGroup: PrintNodeFunction = (node, path, options, printChildren) =
 
   const joinedUnaryTuples = join([",", linebreak], unaryTuples);
   return group(["{", indent([linebreak, joinedUnaryTuples]), linebreak, "}"]);
+};
+
+const escapeName = (value: string): string => {
+  if (value.startsWith("`") && value.endsWith("`")) {
+    // If it's already wrapped in backticks - skip escaping logic below
+    return value;
+  }
+
+  if (value.startsWith('"') && value.endsWith('"')) {
+    // If it's wrapped in double-quotes - rewrap in backticks for consistency
+    return `\`${value.slice(1, -1)}\``;
+  }
+
+  /**
+   * The RegExp was split into multiple ones to avoid unnecessary complexity.
+   */
+  const containsWhitespace = /\s/.test(value);
+  if (containsWhitespace) {
+    return `\`${value}\``;
+  }
+
+  const conflictsWithReservedWords = ["null", "false", "true"].includes(value);
+  if (conflictsWithReservedWords) {
+    return `\`${value}\``;
+  }
+
+  /**
+   * ^ -> starts with
+   * \d+ match 1 or more digits
+   */
+  const startsWithDigit = /^\d+/.test(value);
+  if (startsWithDigit) {
+    return `\`${value}\``;
+  }
+
+  /**
+   * [^ -> match single character NOT present in
+   * a-z -> lower case letters
+   * A-Z -> upper case letters
+   * _ -> underscore
+   * [ -> the '[' symbol
+   * \] -> the ']'
+   * -> \d a digit. The case where the path starts with a digit is handled in the previous if statement
+   * ] -> close the group
+   */
+  if (/[^a-zA-Z_[\]\d]/.test(value)) {
+    return `\`${value}\``;
+  }
+
+  return value;
 };

@@ -103,6 +103,7 @@ describe("prettierPlugin", () => {
     ["`foo+bar`"],
     ["`foo/bar`"],
     ["`foo*bar`"],
+    ["`foo.0.bar`"],
     ["`foobar-1`"],
     ["foo.bar.baz"],
     ["foo.foo_bar"],
