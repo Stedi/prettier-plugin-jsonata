@@ -118,9 +118,9 @@ describe("prettierPlugin", () => {
     ['$split("1,2,3", ",")[1]'],
     ['["foo", "bar"][0]'],
     ["$number(number_of_units_shipped_05)"],
-    ["/(\\w+)\\s(\\w+)/"],
-    ["/(\\w+)\\s(\\w+)/i"],
-    ["/(\\w+)\\s(\\w+)/m"],
+    ["/g(oog)+le/"],
+    ["/\\d{5}(-\\d{4})?/i"],
+    ["/[2-9]|[12]\\d|3[0-6]/m"],
     ["/(\\w+)\\s(\\w+)/im"],
   ])("can format simple %p example without changes", (input) => {
     const formatted = format(input);
