@@ -163,6 +163,11 @@ export interface ParentNode extends Node {
   stages?: JsonataASTNode[];
 }
 
+export interface RegexNode extends Node {
+  type: "regex";
+  value: RegExp;
+}
+
 export type LiteralNode = NumberNode | StringNode | ValueNode;
 
 export type JsonataASTNode =
@@ -186,4 +191,5 @@ export type JsonataASTNode =
   | BindNode
   | LambdaNode
   | SortNode
-  | ParentNode;
+  | ParentNode
+  | RegexNode;
