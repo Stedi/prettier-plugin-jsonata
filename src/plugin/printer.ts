@@ -24,6 +24,7 @@ import type {
   WildcardNode,
   OperatorNode,
   NegationUnaryNode,
+  RegexNode,
 } from "../types";
 import * as prettier from "prettier";
 import type { AstPath, Doc, Options, Printer } from "prettier";
@@ -108,6 +109,8 @@ const printNode: PrintNodeFunction = (node, ...commonPrintArgs) => {
     return printUnaryNode(node, ...commonPrintArgs);
   } else if (node.type === "parent") {
     return printParentNode(node, ...commonPrintArgs);
+  } else if (node.type === "regex") {
+    return printRegEx(node, ...commonPrintArgs);
   }
 
   throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
@@ -441,6 +444,22 @@ const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, pri
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
     printStages(node, path, options, printChildren),
+  ]);
+};
+
+// https://github.com/jsonata-js/jsonata/blob/master/src/parser.js#L95
+const supportedRegexFlags = ["i", "m"];
+
+const printRegEx: PrintNodeFunction<RegexNode> = (node, path, options, printChildren) => {
+  const flags = supportedRegexFlags.filter((flag) => node.value.flags.includes(flag)).join("");
+
+  return group([
+    `/${node.value.source}/${flags}`,
+    printNodeGroup(node, path, options, printChildren),
+    printNodeFocus(node),
+    printNodeIndex(node),
+    printPredicate(node, path, options, printChildren),
+    printKeepArray(node),
   ]);
 };
 
