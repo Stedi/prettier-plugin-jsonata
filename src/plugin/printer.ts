@@ -447,7 +447,7 @@ const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, pri
   ]);
 };
 
-// https://github.com/jsonata-js/jsonata/blob/master/src/parser.js#L95
+// https://github.com/jsonata-js/jsonata/blob/3cea53fe5f2bc94d9026fafb109a1c148fc7679b/src/parser.js#L95
 const supportedRegexFlags = ["i", "m"];
 
 const printRegEx: PrintNodeFunction<RegexNode> = (node, path, options, printChildren) => {
