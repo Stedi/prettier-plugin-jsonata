@@ -124,6 +124,8 @@ export interface ValueNode extends Node {
   value: true | false | null;
 }
 
+export type NullNode = Omit<ValueNode, "value"> & { value: null };
+
 export interface NameNode extends Node {
   type: "name";
   value: string;
@@ -191,5 +193,6 @@ export type JsonataASTNode =
   | BindNode
   | LambdaNode
   | SortNode
+  | NullNode
   | ParentNode
   | RegexNode;
