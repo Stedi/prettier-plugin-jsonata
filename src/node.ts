@@ -29,6 +29,8 @@ import {
   RegexNode,
 } from "./types";
 
+// test
+
 /**
  * Checks whether the node represents AST that evaluates to an object.
  * For example, `{"foo": "bar"}` expression would evaluate to AST that fulfills checks within this function.
