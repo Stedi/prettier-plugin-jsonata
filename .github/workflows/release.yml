@@ -26,6 +26,8 @@ jobs:
   release-external:
     runs-on: ubuntu-latest
     needs: [github-token-setup-job]
+    env:
+      GITHUB_TOKEN: placeholder
     outputs:
       released_version: ${{ steps.release.outputs.released_version }}
     steps:
