@@ -6,10 +6,27 @@ on:
       - synchronize
       - reopened
 jobs:
+  github-token-setup-job:
+    runs-on: ubuntu-latest
+    outputs:
+      github_token: ${{ steps.set-variable.outputs.github_token }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set test variable
+        id: set-variable
+        run: |
+          if [ "${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}" != "" ]; then
+            echo "::set-output name=github_token::${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}"
+          elif [ "${{ secrets.PUBLIC_DEPENDABOT_PACKAGE_TOKEN }}" != "" ]; then
+            echo "::set-output name=github_token::${{ secrets.PUBLIC_DEPENDABOT_PACKAGE_TOKEN }}"
+          fi
+        shell: bash
+
   check:
     runs-on: ubuntu-latest
+    needs: [github-token-setup-job]
     env:
-      GITHUB_TOKEN: placeholder
+      GITHUB_TOKEN: ${{needs.github-token-setup-job.outputs.github_token}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -20,11 +37,7 @@ jobs:
           timeout_minutes: 10
           max_attempts: 3
           command: npm ci
-        env:
-          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
       - run: npm run build
-        env:
-          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
       - uses: crazy-max/ghaction-import-gpg@v3
         with:
           gpg-private-key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
@@ -33,5 +46,3 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: npm run check
-        env:
-          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
