@@ -13,7 +13,7 @@ jobs:
       github_token: ${{ steps.set-variable.outputs.github_token }}
     steps:
       - uses: actions/checkout@v2
-      - name: Set test variable
+      - name: Set github_token variable
         id: set-variable
         run: |
           if [ "${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}" != "" ]; then
@@ -28,8 +28,6 @@ jobs:
     needs: [github-token-setup-job]
     outputs:
       released_version: ${{ steps.release.outputs.released_version }}
-    env:
-      GITHUB_TOKEN: ${{needs.github-token-setup-job.outputs.github_token}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -61,7 +59,7 @@ jobs:
     if: needs.release-external.outputs.released_version != ''
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{needs.github-token-setup-job.outputs.github_token}}
+      GITHUB_TOKEN: placeholder
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -88,3 +86,6 @@ jobs:
       - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
       - run: sed -i '/"access":\ "public"/d' package.json
       - run: npm publish
+        env:
+          GITHUB_TOKEN: ${{needs.github-token-setup-job.outputs.github_token}}
+
