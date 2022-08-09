@@ -88,6 +88,12 @@ jobs:
       - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
       - run: sed -i '/"access":\ "public"/d' package.json
       - run: echo "${{needs.github-token-setup-job.outputs.github_token}}"
+      - run: echo "from secrets - $GITHUB_TOKEN"
+        env:
+          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
+      - run: echo "from needs - $GITHUB_TOKEN"
+        env:
+          GITHUB_TOKEN: ${{needs.github-token-setup-job.outputs.github_token}}
       - run: npm publish
         env:
           GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
