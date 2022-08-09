@@ -89,5 +89,6 @@ jobs:
       - run: sed -i '/"access":\ "public"/d' package.json
       - run: npm publish
         env:
-          GITHUB_TOKEN: ${{needs.github-token-setup-job.outputs.github_token}}
+          GITHUB_TOKEN: ${{secrets.PUBLIC_PACKAGE_GITHUB_TOKEN}}
+          # GITHUB_TOKEN: ${{needs.github-token-setup-job.outputs.github_token}}
 
