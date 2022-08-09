@@ -6,6 +6,9 @@ on:
       - synchronize
       - reopened
 jobs:
+  # Our GH actions are expected to be executed by the dependabot in addition to regular executions by Pull Request creators, 
+  # and the `GITHUB_TOKEN` env var has a different name in dependabot's secrets (PUBLIC_DEPENDABOT_PACKAGE_TOKEN vs PUBLIC_PACKAGE_GITHUB_TOKEN).
+  # To workaround that, we are adding this additional setup job, which outputs the one secret that is present for the current action execution.
   github-token-setup-job:
     runs-on: ubuntu-latest
     outputs:
