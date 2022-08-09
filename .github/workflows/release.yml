@@ -74,9 +74,9 @@ jobs:
       - name: npm publish
         run: |
           if [ "${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}" != "" ]; then
-            GITHUB_TOKEN=${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}" npm publish
+            GITHUB_TOKEN="${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}" npm publish
           elif [ "${{ secrets.PUBLIC_DEPENDABOT_PACKAGE_TOKEN }}" != "" ]; then
-            GITHUB_TOKEN=${{ secrets.PUBLIC_DEPENDABOT_PACKAGE_TOKEN }}" npm publish
+            GITHUB_TOKEN="${{ secrets.PUBLIC_DEPENDABOT_PACKAGE_TOKEN }}" npm publish
           fi
         shell: bash
 
