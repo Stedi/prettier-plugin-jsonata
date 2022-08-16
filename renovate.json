@@ -1,6 +1,40 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>Stedi/renovate-config"],
+  "extends": ["config:base"],
+  "stabilityDays": 21,
+  "internalChecksFilter": "strict",
+  "dependencyDashboard": true,
+  "major": {
+    "automerge": false,
+    "dependencyDashboardApproval": true,
+    "addLabels": ["major-upgrade"]
+  },
+  "replacement": {
+    "automerge": false,
+    "addLabels": ["replacement"]
+  },
+  "vulnerabilityAlerts": {
+    "addLabels": ["security"]
+  },
+  "packageRules": [
+    {
+      "matchSourceUrlPrefixes": ["https://github.com/aws", "https://github.com/microsoft"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "lockFileMaintenance", "rollback", "bump"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true,
+      "platformAutomerge": true,
+      "stabilityDays": 3,
+      "addLabels": ["dependencies"]
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "lockFileMaintenance", "rollback", "bump"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true,
+      "platformAutomerge": true,
+      "addLabels": ["dependencies"]
+    }
+  ],
+  "npmrcMerge": true,
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["at any time"],
