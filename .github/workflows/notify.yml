@@ -7,8 +7,6 @@ on:
 jobs:
   notify-on-dependency-update:
     runs-on: ubuntu-latest
-    # Always run the action, even if the jobs defined in the `needs` array failed.
-    if: ${{ always() }}
     steps:
       - name: Notify about the dependency update
         if: |
