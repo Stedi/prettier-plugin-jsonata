@@ -29,17 +29,3 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: npm run check
-
-  notify-on-dependency-update:
-    runs-on: ubuntu-latest
-    # Always run the action, even if the jobs defined in the `needs` array failed.
-    if: ${{ always() }}
-    needs: [check]
-    steps:
-      - name: Notify about the dependency update
-        if: |
-          contains(fromJson('["renovate[bot]", "dependabot[bot]"]'), github.actor)
-        run: |
-          curl "${{ secrets.SLACK_ALERTS_CHANNEL_WEBHOOK_URL }}" \
-          --data-raw '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Automated dependency upgrade in PRETTIER-PLUGIN-JSONATA needs a review","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"<https://github.com/Stedi/prettier-plugin-jsonata/pull/${{ github.event.pull_request.number }}|Link to the PR>"}}]}' \
-          --compressed
