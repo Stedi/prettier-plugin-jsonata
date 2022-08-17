@@ -72,7 +72,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "volta": {
-    "node": "14.17.0",
+    "node": "14.20.0",
     "npm": "6.14.17"
   }
 }
