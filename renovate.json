@@ -18,6 +18,11 @@
   },
   "packageRules": [
     {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["volta"],
+      "enabled": false
+    },
+    {
       "matchSourceUrlPrefixes": ["https://github.com/aws", "https://github.com/microsoft"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "lockFileMaintenance", "rollback", "bump"],
       "matchCurrentVersion": "!/^0/",
