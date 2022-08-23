@@ -1,10 +1,7 @@
 name: check
 on:
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+
 jobs:
   check:
     runs-on: ubuntu-latest
