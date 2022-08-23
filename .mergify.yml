@@ -6,9 +6,8 @@ pull_request_rules:
       - and: 
         - author=renovate[bot]
         - -label=major-upgrade
-      # We're explicitly listing two checks here, but the remaining branch protection rules still apply
+      # We're explicitly listing one check here, but the remaining branch protection rules still apply
       - status-success=check
-      - status-success=commitlint
       # Use a schedule so that merges only happen during our working hours, reducing the risk of breaking stuff while we're not at work
       - schedule="Mon-Fri 08:00-15:00"
     actions:
