@@ -42,7 +42,7 @@ jobs:
       # contains(fromJson) syntax explained here: https://github.com/orgs/community/discussions/27223#discussioncomment-3255051
       - if: |
           contains(fromJson('["opened", "reopened"]'), github.event.action) &&
-          github.actor === "renovate[bot]" &&
+          github.actor == 'renovate[bot]' &&
           contains(fromJson('["failure", "cancelled"]'), needs.check.outputs.status)
         name: Notify about the failed auto-update
         run: |
