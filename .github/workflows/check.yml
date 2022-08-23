@@ -1,13 +1,12 @@
 name: check
 on:
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ job.status }}
     env:
       GITHUB_TOKEN: placeholder
     steps:
@@ -29,3 +28,24 @@ jobs:
           git-commit-gpgsign: true
         id: import_gpg
       - run: npm run check
+
+  notify-on-failure-if-dep-update:
+    runs-on: ubuntu-latest
+    # Always run the action, even if the jobs defined in the `needs` array failed.
+    if: ${{ always() }}
+    # These needs to be in-sync with the mergify conditions.
+    needs: [check]
+    steps:
+      # 1. Check if the commit originates from a bot.
+      # 2. Check if any of the checks failed or were cancelled.
+
+      # contains(fromJson) syntax explained here: https://github.com/orgs/community/discussions/27223#discussioncomment-3255051
+      - if: |
+          contains(fromJson('["opened", "reopened"]'), github.event.action) &&
+          github.actor == 'renovate[bot]' &&
+          contains(fromJson('["failure", "cancelled"]'), needs.check.outputs.status)
+        name: Notify about the failed auto-update
+        run: |
+          curl "${{ secrets.SLACK_DEPS_CHANNEL_WEBHOOK_URL }}" \
+          --data-raw '{"blocks":[{"type":"header","text":{"type":"plain_text","text":":pandagottafixit: Automated dependency update in the PRETTIER-PLUGIN-JSONATA repository failed :pandagottafixit:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"<https://github.com/Stedi/prettier-plugin-jsonata/pull/${{ github.event.pull_request.number }}|Link to the PR>"}}]}' \
+          --compressed

@@ -1,1 +1,4 @@
 * @stedi/transformers
+# Allow bots to modify the files without the need for us to review the PR
+package.json
+package-lock.json
