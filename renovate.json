@@ -53,19 +53,6 @@
       ]
     },
     {
-      "matchPackageNames": [
-        "software.amazon.smithy:smithy-waiters",
-        "software.amazon.smithy:smithy-openapi",
-        "software.amazon.smithy:smithy-aws-apigateway-traits",
-        "software.amazon.smithy:smithy-aws-traits",
-        "software.amazon.smithy:smithy-validation-model",
-        "software.amazon.smithy:smithy-model",
-        "software.amazon.smithy:smithy-build",
-        "software.amazon.smithy:smithy-cli"
-      ],
-      "allowedVersions": "<=1.21.0"
-    },
-    {
       "matchSourceUrlPrefixes": [
         "https://github.com/aws",
         "https://github.com/amzn",
