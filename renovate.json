@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
+  "extends": ["config:base", "helpers:pinGitHubActionDigests"],
   "stabilityDays": 21,
   "internalChecksFilter": "strict",
   "dependencyDashboard": true,
@@ -16,6 +16,7 @@
   "vulnerabilityAlerts": {
     "addLabels": ["security"]
   },
+  "transitiveRemediation": true,
   "packageRules": [
     {
       "matchManagers": ["npm"],
@@ -23,8 +24,16 @@
       "enabled": false
     },
     {
-      "matchSourceUrlPrefixes": ["https://github.com/aws", "https://github.com/microsoft"],
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "lockFileMaintenance", "rollback", "bump"],
+      "matchPackagePrefixes": ["@stedi"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "rollback", "bump"],
+      "automerge": true,
+      "platformAutomerge": true,
+      "stabilityDays": 0,
+      "addLabels": ["dependencies"]
+    },
+    {
+      "matchSourceUrlPrefixes": ["https://github.com/aws", "https://github.com/amzn", "https://github.com/microsoft"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "rollback", "bump"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
       "platformAutomerge": true,
@@ -32,23 +41,12 @@
       "addLabels": ["dependencies"]
     },
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "lockFileMaintenance", "rollback", "bump"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "rollback", "bump"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
       "platformAutomerge": true,
       "addLabels": ["dependencies"]
-    },
-    {
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["volta"],
-      "enabled": false
     }
   ],
-  "npmrcMerge": true,
-  "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["at any time"],
-    "automerge": true,
-    "platformAutomerge": true
-  }
+  "npmrcMerge": true
 }
