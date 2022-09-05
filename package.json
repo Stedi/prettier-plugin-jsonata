@@ -49,7 +49,7 @@
     "@typescript-eslint/eslint-plugin": "5.33.0",
     "@typescript-eslint/parser": "5.33.0",
     "concurrently": "6.5.1",
-    "esbuild": "0.15.1",
+    "esbuild": "0.15.3",
     "eslint": "8.21.0",
     "eslint-plugin-jest": "25.7.0",
     "husky": "7.0.4",
