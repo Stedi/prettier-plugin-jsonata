@@ -10,17 +10,17 @@ jobs:
     env:
       GITHUB_TOKEN: placeholder
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # tag=v2
+      - uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
         with:
           node-version: "14"
-      - uses: nick-fields/retry@v2
+      - uses: nick-fields/retry@7f8f3d9f0f62fe5925341be21c2e8314fd4f7c7c # tag=v2
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: npm ci
       - run: npm run build
-      - uses: crazy-max/ghaction-import-gpg@v3
+      - uses: crazy-max/ghaction-import-gpg@1c6a9e9d3594f2d743f1b1dd7669ab0dfdffa922 # tag=v3
         with:
           gpg-private-key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
           passphrase: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PASSPHRASE}}
