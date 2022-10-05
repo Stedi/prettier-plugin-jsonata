@@ -67,16 +67,8 @@ jobs:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: sed -i 's/registry.npmjs.org/npm.pkg.github.com\/Stedi/' package.json
       - run: sed -i '/"access":\ "public"/d' package.json
+      - run: npm publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}
 
-      # Our GH actions are expected to be executed by dependabot in addition to regular executions by Pull Request creators, 
-      # and the `GITHUB_TOKEN` env var has a different name in dependabot's secrets (PUBLIC_DEPENDABOT_PACKAGE_TOKEN vs PUBLIC_PACKAGE_GITHUB_TOKEN).
-      # To workaround that, we are setting that env var manually here.
-      - name: npm publish
-        run: |
-          if [ "${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}" != "" ]; then
-            GITHUB_TOKEN="${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}" npm publish
-          elif [ "${{ secrets.PUBLIC_DEPENDABOT_PACKAGE_TOKEN }}" != "" ]; then
-            GITHUB_TOKEN="${{ secrets.PUBLIC_DEPENDABOT_PACKAGE_TOKEN }}" npm publish
-          fi
-        shell: bash
 
