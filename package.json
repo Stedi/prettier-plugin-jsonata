@@ -43,7 +43,7 @@
     "@commitlint/cli": "13.2.1",
     "@commitlint/config-conventional": "13.2.0",
     "@semantic-release/exec": "6.0.3",
-    "@swc-node/jest": "1.5.2",
+    "@swc-node/jest": "1.5.3",
     "@types/jest": "27.5.2",
     "@types/prettier": "2.7.0",
     "@typescript-eslint/eslint-plugin": "5.38.0",
