@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
         with:
           node-version: "14"
-      - uses: nick-fields/retry@7f8f3d9f0f62fe5925341be21c2e8314fd4f7c7c # tag=v2
+      - uses: nick-fields/retry@3e91a01664abd3c5cd539100d10d33b9c5b68482 # tag=v2
         with:
           timeout_minutes: 10
           max_attempts: 3
