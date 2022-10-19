@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
         with:
           node-version: 14
-      - run: npm ci        
+      - run: npm ci
       - run: npm run build
       - run: npm run check
       - uses: crazy-max/ghaction-import-gpg@1c6a9e9d3594f2d743f1b1dd7669ab0dfdffa922 # tag=v3
@@ -69,6 +69,6 @@ jobs:
       - run: sed -i '/"access":\ "public"/d' package.json
       - run: npm publish
         env:
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_PACKAGE_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PRETTIER_PLUGIN_JSONATA_GITHUB_TOKEN }}
 
 
