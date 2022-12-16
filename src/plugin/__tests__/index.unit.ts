@@ -20,7 +20,7 @@ describe("prettierPlugin", () => {
 
   test("re-throws JsonataError on invalid JSONata statement", () => {
     expect(() => format("+$foo")).toThrow(
-      'Error: The symbol "+" cannot be used as a unary operator, code: S0211, position: 1, token: +',
+      'The symbol "+" cannot be used as a unary operator, code: S0211, position: 1, token: +',
     );
   });
 
