@@ -44,6 +44,14 @@ export const isObjectUnaryNode = (node: JsonataASTNode): node is ObjectUnaryNode
     return false;
   }
 
+  if (!Array.isArray(node.lhs)) {
+    return false;
+  }
+
+  if (node.lhs.some((tuple) => !Array.isArray(tuple))) {
+    return false;
+  }
+
   return true;
 };
 

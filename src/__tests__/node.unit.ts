@@ -52,6 +52,41 @@ describe("isObjectUnaryNode", () => {
     const astNode = jsonata('{"foo":{"bar": undefined, "baz": "foo"}}').ast() as JsonataASTNode;
     expect(isObjectUnaryNode(astNode)).toBeTrue();
   });
+
+  it("returns false for non iterable lhs", () => {
+    const astNode = {
+      type: "unary",
+      value: "{",
+      lhs: "foo" as unknown,
+      position: 1,
+    } as JsonataASTNode;
+    expect(isObjectUnaryNode(astNode)).toBeFalse();
+  });
+
+  it("returns false for non iterable lhs tuples", () => {
+    const astNode = {
+      type: "unary",
+      value: "{",
+      lhs: ["foo", "bar"] as unknown,
+      position: 1,
+    } as JsonataASTNode;
+    expect(isObjectUnaryNode(astNode)).toBeFalse();
+  });
+
+  it("returns true for iterable lhs tuples", () => {
+    const astNode = {
+      type: "unary",
+      value: "{",
+      lhs: [
+        [
+          { type: "string", value: "foo", position: 1 },
+          { type: "string", value: "bar", position: 1 },
+        ],
+      ],
+      position: 1,
+    } as JsonataASTNode;
+    expect(isObjectUnaryNode(astNode)).toBeTrue();
+  });
 });
 
 describe("isPrimitiveNode", () => {
