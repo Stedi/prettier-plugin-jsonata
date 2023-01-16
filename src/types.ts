@@ -42,6 +42,7 @@ export interface FunctionNode extends Node {
   value: "(";
   arguments: JsonataASTNode[];
   procedure: VariableNode;
+  stages?: JsonataASTNode[];
 }
 
 export interface PartialFunctionNode extends Node {
@@ -49,6 +50,7 @@ export interface PartialFunctionNode extends Node {
   value: "(";
   arguments: JsonataASTNode[];
   procedure: VariableNode;
+  stages?: JsonataASTNode[];
 }
 
 export interface OperatorNode extends Node {

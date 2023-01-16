@@ -199,6 +199,7 @@ const printFunctionNode: PrintFunctionNodeFunction = (node, path, options, print
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
+    printStages(node, path, options, printChildren),
   ]);
 };
 
@@ -487,12 +488,9 @@ const printPredicate: PrintNodeFunction = (node, path, options, printChildren) =
   return path.map(printChildren, "predicate");
 };
 
-const printStages: PrintNodeFunction<NameNode | VariableNode | ParentNode | BlockNode> = (
-  node,
-  path,
-  options,
-  printChildren,
-) => {
+const printStages: PrintNodeFunction<
+  NameNode | VariableNode | ParentNode | BlockNode | FunctionNode | PartialFunctionNode
+> = (node, path, options, printChildren) => {
   if (!node.stages) {
     return "";
   }
