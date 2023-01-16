@@ -488,12 +488,9 @@ const printPredicate: PrintNodeFunction = (node, path, options, printChildren) =
   return path.map(printChildren, "predicate");
 };
 
-const printStages: PrintNodeFunction<NameNode | VariableNode | ParentNode | BlockNode | FunctionNode | PartialFunctionNode> = (
-  node,
-  path,
-  options,
-  printChildren,
-) => {
+const printStages: PrintNodeFunction<
+  NameNode | VariableNode | ParentNode | BlockNode | FunctionNode | PartialFunctionNode
+> = (node, path, options, printChildren) => {
   if (!node.stages) {
     return "";
   }
