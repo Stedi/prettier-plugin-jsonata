@@ -791,6 +791,13 @@ $filter(
 )
       `,
     ],
+    [
+      '$map([{"key": "1","value": 2},{"key": "1","value": 2}],function($v, $i, $a) { { "param": $v } })[param].{"key": $.param.key,"value": $.param.value}',
+      `
+$map([{ "key": "1", "value": 2 }, { "key": "1", "value": 2 }], function($v, $i, $a) { { "param": $v } })[param]
+  .{ "key": $.param.key, "value": $.param.value }
+      `,
+    ],
   ])("can format complex example: %p", (input, expectedOutput) => {
     expect(format(input)).toEqual(expectedOutput.trim());
   });
