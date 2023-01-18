@@ -43,6 +43,10 @@ let previousNodePosition = -1;
 
 export const print: Printer["print"] = (path, options, printChildren) => {
   const node: JsonataASTNodeWithComments = path.getValue();
+  // Very weird output??
+  if (!node) {
+    return group([]);
+  }
 
   if ("jsonataComments" in node) {
     previousNodePosition = -1;
