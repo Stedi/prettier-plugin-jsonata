@@ -58,7 +58,7 @@
     "jest-extended": "1.2.1",
     "jest-matcher-specific-error": "1.0.0",
     "jsonata": "1.8.6",
-    "prettier": "2.8.2",
+    "prettier": "2.8.3",
     "semantic-release": "19.0.5",
     "ts-jest": "27.1.5",
     "ts-node": "10.9.1",
