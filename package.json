@@ -57,7 +57,7 @@
     "jest": "27.5.1",
     "jest-extended": "1.2.1",
     "jest-matcher-specific-error": "1.0.0",
-    "jsonata": "1.8.6",
+    "jsonata": "2.0.1",
     "prettier": "2.8.4",
     "semantic-release": "19.0.5",
     "ts-jest": "27.1.5",
@@ -65,7 +65,7 @@
     "typescript": "4.9.5"
   },
   "peerDependencies": {
-    "jsonata": "^1.7.0",
+    "jsonata": "^1.7.0 || ^2.0.0",
     "prettier": "^2.5.1"
   },
   "publishConfig": {
