@@ -11,7 +11,7 @@ jobs:
       GITHUB_TOKEN: placeholder
     steps:
       - uses: actions/checkout@dc323e67f16fb5f7663d20ff7941f27f5809e9b6 # v2
-      - uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
         with:
           node-version: "14"
       - uses: nick-fields/retry@943e742917ac94714d2f408a0e8320f2d1fcafcd # v2
