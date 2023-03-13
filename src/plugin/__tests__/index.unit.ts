@@ -144,12 +144,12 @@ describe("prettierPlugin", () => {
     `);
 
     formatted = format(`(false ? ["foo", "bar"] : ["baz"])`);
-    expect(formatted).toMatchInlineSnapshot(`"(false ? [\\"foo\\", \\"bar\\"] : [\\"baz\\"])"`);
+    expect(formatted).toMatchInlineSnapshot(`"(false ? ["foo", "bar"] : ["baz"])"`);
 
     formatted = format(`(false ? ["foo", "bar"] : ["baz"]; boo)`);
     expect(formatted).toMatchInlineSnapshot(`
       "(
-        false ? [\\"foo\\", \\"bar\\"] : [\\"baz\\"];
+        false ? ["foo", "bar"] : ["baz"];
         boo
       )"
     `);
@@ -174,10 +174,10 @@ describe("prettierPlugin", () => {
   test("handles line breaks for lambdas on print width overflow", () => {
     let formatted = format(`function () { true }`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
-    "function() {
-      true
-    }"
-  `);
+          "function() {
+            true
+          }"
+      `);
 
     formatted = format(`function ($withArgument) { true }`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
@@ -216,24 +216,24 @@ describe("prettierPlugin", () => {
 
   test("handles line breaks for objects on print width overflow", () => {
     let formatted = format(`{"foo": "bar"}`, { printWidth: 20 });
-    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": \\"bar\\" }"`);
+    expect(formatted).toMatchInlineSnapshot(`"{ "foo": "bar" }"`);
 
     formatted = format(`{"foo": "bar", "baz": "boo"}`, { printWidth: 40 });
-    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": \\"bar\\", \\"baz\\": \\"boo\\" }"`);
+    expect(formatted).toMatchInlineSnapshot(`"{ "foo": "bar", "baz": "boo" }"`);
 
     formatted = format(`{"foo": "bar", "baz": "boo"}`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
-        \\"foo\\": \\"bar\\",
-        \\"baz\\": \\"boo\\"
+        "foo": "bar",
+        "baz": "boo"
       }"
     `);
 
     formatted = format(`{"foo": "bar","longerKey": "longerValue"}`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
-        \\"foo\\": \\"bar\\",
-        \\"longerKey\\": \\"longerValue\\"
+        "foo": "bar",
+        "longerKey": "longerValue"
       }"
     `);
   });
@@ -242,54 +242,54 @@ describe("prettierPlugin", () => {
     let formatted = format(`{"foo": {"bar": "baz"}, "boo": "bee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
-        \\"foo\\": { \\"bar\\": \\"baz\\" },
-        \\"boo\\": \\"bee\\"
+        "foo": { "bar": "baz" },
+        "boo": "bee"
       }"
     `);
 
     formatted = format(`{"foo": {"bar": {"baz": "boo"}}, "bee": "fee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
-        \\"foo\\": {
-          \\"bar\\": { \\"baz\\": \\"boo\\" }
+        "foo": {
+          "bar": { "baz": "boo" }
         },
-        \\"bee\\": \\"fee\\"
+        "bee": "fee"
       }"
     `);
 
     formatted = format(`{"foo": ["bar", "baz"], "boo": "bee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
-        \\"foo\\": [\\"bar\\", \\"baz\\"],
-        \\"boo\\": \\"bee\\"
+        "foo": ["bar", "baz"],
+        "boo": "bee"
       }"
     `);
 
     formatted = format(`{"foo": {"bar": ["baz", "boo"]}, "bee": "fee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
-        \\"foo\\": {
-          \\"bar\\": [\\"baz\\", \\"boo\\"]
+        "foo": {
+          "bar": ["baz", "boo"]
         },
-        \\"bee\\": \\"fee\\"
+        "bee": "fee"
       }"
     `);
   });
 
   test("handles line breaks for arrays on print width overflow", () => {
     let formatted = format(`["foo","bar"]`, { printWidth: 20 });
-    expect(formatted).toMatchInlineSnapshot(`"[\\"foo\\", \\"bar\\"]"`);
+    expect(formatted).toMatchInlineSnapshot(`"["foo", "bar"]"`);
 
     formatted = format(`["foo", "bar", "baz", "boo"]`, { printWidth: 40 });
-    expect(formatted).toMatchInlineSnapshot(`"[\\"foo\\", \\"bar\\", \\"baz\\", \\"boo\\"]"`);
+    expect(formatted).toMatchInlineSnapshot(`"["foo", "bar", "baz", "boo"]"`);
 
     formatted = format(`["foo", "bar", "baz", "boo"]`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "[
-        \\"foo\\",
-        \\"bar\\",
-        \\"baz\\",
-        \\"boo\\"
+        "foo",
+        "bar",
+        "baz",
+        "boo"
       ]"
     `);
   });
@@ -443,7 +443,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"$foo[0]"`);
 
     formatted = format(`"foo"[0]`);
-    expect(formatted).toMatchInlineSnapshot(`"\\"foo\\"[0]"`);
+    expect(formatted).toMatchInlineSnapshot(`""foo"[0]"`);
 
     formatted = format(`123[0]`);
     expect(formatted).toMatchInlineSnapshot(`"123[0]"`);
@@ -458,7 +458,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)[0]"`);
 
     formatted = format(`{ "foo": bar }[0]`);
-    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": bar }[0]"`);
+    expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }[0]"`);
 
     formatted = format(`[foo, bar][0]`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar][0]"`);
@@ -476,10 +476,10 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }[0]"`);
 
     formatted = format(`foo.{ "foo": %[0] }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": %[0] }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %[0] }"`);
 
     formatted = format(`foo.{ "foo": bar.{ "bar": %.%[0] } }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%[0] } }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%[0] } }"`);
   });
 
   test("handles keepArray on the majority of node types", () => {
@@ -496,7 +496,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"$foo[]"`);
 
     formatted = format(`"foo"[]`);
-    expect(formatted).toMatchInlineSnapshot(`"\\"foo\\"[]"`);
+    expect(formatted).toMatchInlineSnapshot(`""foo"[]"`);
 
     formatted = format(`123[]`);
     expect(formatted).toMatchInlineSnapshot(`"123[]"`);
@@ -511,7 +511,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)[]"`);
 
     formatted = format(`{ "foo": bar }[]`);
-    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": bar }[]"`);
+    expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }[]"`);
 
     formatted = format(`[foo, bar][]`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar][]"`);
@@ -529,10 +529,10 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }[]"`);
 
     formatted = format(`foo.{ "foo": %[] }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": %[] }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %[] }"`);
 
     formatted = format(`foo.{ "foo": bar.{ "bar": %.%[] } }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%[] } }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%[] } }"`);
   });
 
   test("handles index and focus on the majority of node types", () => {
@@ -549,7 +549,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"$foo@$j#$i"`);
 
     formatted = format(`"foo"@$j#$i`);
-    expect(formatted).toMatchInlineSnapshot(`"\\"foo\\"@$j#$i"`);
+    expect(formatted).toMatchInlineSnapshot(`""foo"@$j#$i"`);
 
     formatted = format(`123@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"123@$j#$i"`);
@@ -564,7 +564,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)@$j#$i"`);
 
     formatted = format(`{ "foo": bar }@$j#$i`);
-    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": bar }@$j#$i"`);
+    expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }@$j#$i"`);
 
     formatted = format(`[foo, bar]@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar]@$j#$i"`);
@@ -579,10 +579,10 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }@$j#$i"`);
 
     formatted = format(`foo.{ "foo": %@$j#$i }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": %@$j#$i }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %@$j#$i }"`);
 
     formatted = format(`foo.{ "foo": bar.{ "bar": %.%@$j#$i } }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%@$j#$i } }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%@$j#$i } }"`);
   });
 
   test("handles grouping on the majority of node types", () => {
@@ -596,7 +596,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"$foo{ k: v }"`);
 
     formatted = format(`"foo"{ k: v }`);
-    expect(formatted).toMatchInlineSnapshot(`"\\"foo\\"{ k: v }"`);
+    expect(formatted).toMatchInlineSnapshot(`""foo"{ k: v }"`);
 
     formatted = format(`123{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"123{ k: v }"`);
@@ -611,7 +611,7 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"foo(bar){ k: v }"`);
 
     formatted = format(`{ "foo": bar }{ k: v }`);
-    expect(formatted).toMatchInlineSnapshot(`"{ \\"foo\\": bar }{ k: v }"`);
+    expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }{ k: v }"`);
 
     formatted = format(`[foo, bar]{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar]{ k: v }"`);
@@ -629,10 +629,10 @@ describe("prettierPlugin", () => {
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }{ k: v }"`);
 
     formatted = format(`foo.{ "foo": %{ k: v } }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": %{ k: v } }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %{ k: v } }"`);
 
     formatted = format(`foo.{ "foo": bar.{ "bar": %.%{ k: v } } }`);
-    expect(formatted).toMatchInlineSnapshot(`"foo.{ \\"foo\\": bar.{ \\"bar\\": %.%{ k: v } } }"`);
+    expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%{ k: v } } }"`);
   });
 
   test("preserves comments", () => {
