@@ -22,10 +22,10 @@ jobs:
       - run: npm run build
       - uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # v5
         with:
-          gpg-private-key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
+          gpg_private_key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
           passphrase: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PASSPHRASE}}
-          git-user-signingkey: true
-          git-commit-gpgsign: true
+          git_user_signingkey: true
+          git_commit_gpgsign: true
         id: import_gpg
       - run: npm run check
 
