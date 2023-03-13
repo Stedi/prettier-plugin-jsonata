@@ -20,7 +20,7 @@ jobs:
           max_attempts: 3
           command: npm ci
       - run: npm run build
-      - uses: crazy-max/ghaction-import-gpg@1c6a9e9d3594f2d743f1b1dd7669ab0dfdffa922 # tag=v3
+      - uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # v5
         with:
           gpg-private-key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
           passphrase: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PASSPHRASE}}
