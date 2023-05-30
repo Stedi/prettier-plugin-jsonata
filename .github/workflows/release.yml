@@ -18,7 +18,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run check
-      - uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # v5
+      - uses: crazy-max/ghaction-import-gpg@72b6676b71ab476b77e676928516f6982eef7a41 # v5
         with:
           gpg_private_key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
           passphrase: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PASSPHRASE}}
@@ -51,7 +51,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run check
-      - uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # v5
+      - uses: crazy-max/ghaction-import-gpg@72b6676b71ab476b77e676928516f6982eef7a41 # v5
         with:
           gpg_private_key: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PRIVATE_KEY}}
           passphrase: ${{secrets.STEDI_ENGINEERING_PUBLIC_REPO_GPG_PASSPHRASE}}
