@@ -25,7 +25,10 @@ export async function formatJsonata(expression: string, options?: SupportedPrett
 /**
  * Serializes JSONata AST to a formatted string representing JSONata expression.
  */
-export async function serializeJsonata(jsonataAST: JsonataASTNode, options?: SupportedPrettierOptions): Promise<string> {
+export async function serializeJsonata(
+  jsonataAST: JsonataASTNode,
+  options?: SupportedPrettierOptions,
+): Promise<string> {
   const pluginBoundToAST = buildPluginBoundToAST(jsonataAST);
 
   clearPrettierCacheIfAvailable();
