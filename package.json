@@ -8,7 +8,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "test": "SKIP_EXPOSE=true jest --config ./test/jest.unit.ts",
+    "test": "SKIP_EXPOSE=true NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest.unit.ts",
     "types": "tsc -p tsconfig.build.json --noEmit",
     "lint": "eslint . --ext .ts",
     "style": "prettier -c .",
