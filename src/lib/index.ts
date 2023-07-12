@@ -9,10 +9,10 @@ type SupportedPrettierOptions = Pick<PrettierOptions, "printWidth" | "tabWidth" 
 /**
  * Re-formats JSONata expression string in an opinionated way on where to put line breaks and whitespace.
  */
-export function formatJsonata(expression: string, options?: SupportedPrettierOptions): string {
+export async function formatJsonata(expression: string, options?: SupportedPrettierOptions): Promise<string> {
   clearPrettierCacheIfAvailable();
 
-  return prettier.format(expression, {
+  return await prettier.format(expression, {
     parser: prettierPlugin.AST_PARSER_NAME,
     plugins: [prettierPlugin],
     printWidth: 150,
@@ -25,12 +25,12 @@ export function formatJsonata(expression: string, options?: SupportedPrettierOpt
 /**
  * Serializes JSONata AST to a formatted string representing JSONata expression.
  */
-export function serializeJsonata(jsonataAST: JsonataASTNode, options?: SupportedPrettierOptions): string {
+export async function serializeJsonata(jsonataAST: JsonataASTNode, options?: SupportedPrettierOptions): Promise<string> {
   const pluginBoundToAST = buildPluginBoundToAST(jsonataAST);
 
   clearPrettierCacheIfAvailable();
 
-  return prettier.format("ignore text input", {
+  return await prettier.format("ignore text input", {
     parser: prettierPlugin.AST_PARSER_NAME,
     plugins: [pluginBoundToAST],
     printWidth: 150,
