@@ -6,7 +6,7 @@ const commonConfig: Config.InitialOptions = {
   moduleFileExtensions: ["js", "jsx", "ts"],
   testPathIgnorePatterns: ["jest.*.ts", "cdk.out", "dist"],
   transform: {
-    "^.+\\.(t|j)s$": "@swc-node/jest",
+    "^.+\\.(t|j)s$": "@swc/jest",
   },
   setupFilesAfterEnv: ["<rootDir>/test/setupAfterEnv.ts"],
 };
