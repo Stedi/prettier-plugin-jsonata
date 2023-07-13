@@ -3,8 +3,8 @@ import * as prettier from "prettier";
 import jsonata from "jsonata";
 
 describe("prettierPlugin", () => {
-  const format = (input: string, options?: prettier.Options) => {
-    const formatted = prettier.format(input, {
+  const format = async (input: string, options?: prettier.Options) => {
+    const formatted = await prettier.format(input, {
       parser: prettierPlugin.AST_PARSER_NAME,
       plugins: [prettierPlugin],
       printWidth: 150,
@@ -18,9 +18,9 @@ describe("prettierPlugin", () => {
     return formatted;
   };
 
-  test("re-throws JsonataError on invalid JSONata statement", () => {
-    expect(() => format("+$foo")).toThrow(
-      'The symbol "+" cannot be used as a unary operator, code: S0211, position: 1, token: +',
+  test("re-throws JsonataError on invalid JSONata statement", async () => {
+    await expect(format("+$foo")).rejects.toMatchError(
+      new Error('The symbol "+" cannot be used as a unary operator, code: S0211, position: 1, token: +'),
     );
   });
 
@@ -122,19 +122,19 @@ describe("prettierPlugin", () => {
     ["/\\d{5}(-\\d{4})?/i"],
     ["/[2-9]|[12]\\d|3[0-6]/m"],
     ["/(\\w+)\\s(\\w+)/im"],
-  ])("can format simple %p example without changes", (input) => {
-    const formatted = format(input);
+  ])("can format simple %p example without changes", async (input) => {
+    const formatted = await format(input);
     expect(formatted).toEqual(input);
   });
 
-  test("formats blocks with new lines", () => {
-    let formatted = format(`()`);
+  test("formats blocks with new lines", async () => {
+    let formatted = await format(`()`);
     expect(formatted).toMatchInlineSnapshot(`"()"`);
 
-    formatted = format(`(foo)`);
+    formatted = await format(`(foo)`);
     expect(formatted).toMatchInlineSnapshot(`"(foo)"`);
 
-    formatted = format(`(foo;bar;baz)`);
+    formatted = await format(`(foo;bar;baz)`);
     expect(formatted).toMatchInlineSnapshot(`
       "(
         foo;
@@ -143,10 +143,10 @@ describe("prettierPlugin", () => {
       )"
     `);
 
-    formatted = format(`(false ? ["foo", "bar"] : ["baz"])`);
+    formatted = await format(`(false ? ["foo", "bar"] : ["baz"])`);
     expect(formatted).toMatchInlineSnapshot(`"(false ? ["foo", "bar"] : ["baz"])"`);
 
-    formatted = format(`(false ? ["foo", "bar"] : ["baz"]; boo)`);
+    formatted = await format(`(false ? ["foo", "bar"] : ["baz"]; boo)`);
     expect(formatted).toMatchInlineSnapshot(`
       "(
         false ? ["foo", "bar"] : ["baz"];
@@ -155,14 +155,14 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for functions with more than one argument on print width overflow", () => {
-    let formatted = format(`longFunctionName()`, { printWidth: 10 });
+  test("handles line breaks for functions with more than one argument on print width overflow", async () => {
+    let formatted = await format(`longFunctionName()`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`"longFunctionName()"`);
 
-    formatted = format(`longFunctionName($withArgument)`, { printWidth: 10 });
+    formatted = await format(`longFunctionName($withArgument)`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`"longFunctionName($withArgument)"`);
 
-    formatted = format(`longFunctionName($withArgument, $withAnotherArgument)`, { printWidth: 10 });
+    formatted = await format(`longFunctionName($withArgument, $withAnotherArgument)`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
       "longFunctionName(
         $withArgument,
@@ -171,22 +171,22 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for lambdas on print width overflow", () => {
-    let formatted = format(`function () { true }`, { printWidth: 10 });
+  test("handles line breaks for lambdas on print width overflow", async () => {
+    let formatted = await format(`function () { true }`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
           "function() {
             true
           }"
       `);
 
-    formatted = format(`function ($withArgument) { true }`, { printWidth: 10 });
+    formatted = await format(`function ($withArgument) { true }`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
       "function($withArgument) {
         true
       }"
     `);
 
-    formatted = format(`function ($withArgument, $withAnotherArgument) { true }`, { printWidth: 10 });
+    formatted = await format(`function ($withArgument, $withAnotherArgument) { true }`, { printWidth: 10 });
     expect(formatted).toMatchInlineSnapshot(`
       "function(
         $withArgument,
@@ -196,7 +196,7 @@ describe("prettierPlugin", () => {
       }"
     `);
 
-    formatted = format(
+    formatted = await format(
       `function ($withArgument, $withAnotherArgument) {( $foo := $withArgument + $withAnotherArgument; $foo )}`,
       { printWidth: 10 },
     );
@@ -214,14 +214,14 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for objects on print width overflow", () => {
-    let formatted = format(`{"foo": "bar"}`, { printWidth: 20 });
+  test("handles line breaks for objects on print width overflow", async () => {
+    let formatted = await format(`{"foo": "bar"}`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"{ "foo": "bar" }"`);
 
-    formatted = format(`{"foo": "bar", "baz": "boo"}`, { printWidth: 40 });
+    formatted = await format(`{"foo": "bar", "baz": "boo"}`, { printWidth: 40 });
     expect(formatted).toMatchInlineSnapshot(`"{ "foo": "bar", "baz": "boo" }"`);
 
-    formatted = format(`{"foo": "bar", "baz": "boo"}`, { printWidth: 20 });
+    formatted = await format(`{"foo": "bar", "baz": "boo"}`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
         "foo": "bar",
@@ -229,7 +229,7 @@ describe("prettierPlugin", () => {
       }"
     `);
 
-    formatted = format(`{"foo": "bar","longerKey": "longerValue"}`, { printWidth: 20 });
+    formatted = await format(`{"foo": "bar","longerKey": "longerValue"}`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
         "foo": "bar",
@@ -238,8 +238,8 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("always breaks objects with nested children which are of object or array type", () => {
-    let formatted = format(`{"foo": {"bar": "baz"}, "boo": "bee"}`, { printWidth: 200 });
+  test("always breaks objects with nested children which are of object or array type", async () => {
+    let formatted = await format(`{"foo": {"bar": "baz"}, "boo": "bee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
         "foo": { "bar": "baz" },
@@ -247,7 +247,7 @@ describe("prettierPlugin", () => {
       }"
     `);
 
-    formatted = format(`{"foo": {"bar": {"baz": "boo"}}, "bee": "fee"}`, { printWidth: 200 });
+    formatted = await format(`{"foo": {"bar": {"baz": "boo"}}, "bee": "fee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
         "foo": {
@@ -257,7 +257,7 @@ describe("prettierPlugin", () => {
       }"
     `);
 
-    formatted = format(`{"foo": ["bar", "baz"], "boo": "bee"}`, { printWidth: 200 });
+    formatted = await format(`{"foo": ["bar", "baz"], "boo": "bee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
         "foo": ["bar", "baz"],
@@ -265,7 +265,7 @@ describe("prettierPlugin", () => {
       }"
     `);
 
-    formatted = format(`{"foo": {"bar": ["baz", "boo"]}, "bee": "fee"}`, { printWidth: 200 });
+    formatted = await format(`{"foo": {"bar": ["baz", "boo"]}, "bee": "fee"}`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "{
         "foo": {
@@ -276,14 +276,14 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for arrays on print width overflow", () => {
-    let formatted = format(`["foo","bar"]`, { printWidth: 20 });
+  test("handles line breaks for arrays on print width overflow", async () => {
+    let formatted = await format(`["foo","bar"]`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"["foo", "bar"]"`);
 
-    formatted = format(`["foo", "bar", "baz", "boo"]`, { printWidth: 40 });
+    formatted = await format(`["foo", "bar", "baz", "boo"]`, { printWidth: 40 });
     expect(formatted).toMatchInlineSnapshot(`"["foo", "bar", "baz", "boo"]"`);
 
-    formatted = format(`["foo", "bar", "baz", "boo"]`, { printWidth: 20 });
+    formatted = await format(`["foo", "bar", "baz", "boo"]`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "[
         "foo",
@@ -294,11 +294,11 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for ternary conditions on print width overflow", () => {
-    let formatted = format(`foo ? bar : baz`, { printWidth: 20 });
+  test("handles line breaks for ternary conditions on print width overflow", async () => {
+    let formatted = await format(`foo ? bar : baz`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"foo ? bar : baz"`);
 
-    formatted = format(`foo ? bar : longerValue`, { printWidth: 20 });
+    formatted = await format(`foo ? bar : longerValue`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         ? bar
@@ -306,8 +306,8 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("always inserts line breaks for nested ternary conditions", () => {
-    let formatted = format(`foo ? bar : baz ? boo : bee`, { printWidth: 200 });
+  test("always inserts line breaks for nested ternary conditions", async () => {
+    let formatted = await format(`foo ? bar : baz ? boo : bee`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         ? bar
@@ -316,7 +316,7 @@ describe("prettierPlugin", () => {
           : bee"
     `);
 
-    formatted = format(`foo ? bar ? baz : boo : bee`, { printWidth: 200 });
+    formatted = await format(`foo ? bar ? baz : boo : bee`, { printWidth: 200 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         ? bar
@@ -326,36 +326,36 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for binary nodes on print width overflow", () => {
-    let formatted = format(`foo+bar`, { printWidth: 20 });
+  test("handles line breaks for binary nodes on print width overflow", async () => {
+    let formatted = await format(`foo+bar`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"foo + bar"`);
 
-    formatted = format(`longerValue+anotherLongerValue`, { printWidth: 20 });
+    formatted = await format(`longerValue+anotherLongerValue`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "longerValue
         + anotherLongerValue"
     `);
   });
 
-  test("handles line breaks for apply nodes on print width overflow", () => {
-    let formatted = format(`foo~>bar`, { printWidth: 20 });
+  test("handles line breaks for apply nodes on print width overflow", async () => {
+    let formatted = await format(`foo~>bar`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"foo ~> bar"`);
 
-    formatted = format(`longerValue~>anotherLongerValue`, { printWidth: 20 });
+    formatted = await format(`longerValue~>anotherLongerValue`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "longerValue
         ~> anotherLongerValue"
     `);
   });
 
-  test("avoids line breaks for bind nodes on print width overflow", () => {
-    let formatted = format(`$foo:=bar`, { printWidth: 20 });
+  test("avoids line breaks for bind nodes on print width overflow", async () => {
+    let formatted = await format(`$foo:=bar`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"$foo := bar"`);
 
-    formatted = format(`$longerVarName:=longerValue`, { printWidth: 20 });
+    formatted = await format(`$longerVarName:=longerValue`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"$longerVarName := longerValue"`);
 
-    formatted = format(`$longerVarName:=longer.path.to.value`, { printWidth: 20 });
+    formatted = await format(`$longerVarName:=longer.path.to.value`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "$longerVarName := longer
         .path
@@ -364,11 +364,11 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for filter nodes on print width overflow", () => {
-    let formatted = format(`foo.bar[a=b]`, { printWidth: 20 });
+  test("handles line breaks for filter nodes on print width overflow", async () => {
+    let formatted = await format(`foo.bar[a=b]`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"foo.bar[a = b]"`);
 
-    formatted = format(`foo.bar[longerKey=longerValue]`, { printWidth: 20 });
+    formatted = await format(`foo.bar[longerKey=longerValue]`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         .bar[
@@ -378,11 +378,11 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for sort nodes on print width overflow", () => {
-    let formatted = format(`foo.bar^(<c)`, { printWidth: 20 });
+  test("handles line breaks for sort nodes on print width overflow", async () => {
+    let formatted = await format(`foo.bar^(<c)`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"foo.bar^(<c)"`);
 
-    formatted = format(`foo.bar^(<longerSortKey)`, { printWidth: 20 });
+    formatted = await format(`foo.bar^(<longerSortKey)`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         .bar^(
@@ -390,7 +390,7 @@ describe("prettierPlugin", () => {
         )"
     `);
 
-    formatted = format(`foo.bar^(<firstSortKey,>secondSortKey)`, { printWidth: 20 });
+    formatted = await format(`foo.bar^(<firstSortKey,>secondSortKey)`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         .bar^(
@@ -400,11 +400,11 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("handles line breaks for path nodes on print width overflow", () => {
-    let formatted = format(`foo.bar.baz`, { printWidth: 20 });
+  test("handles line breaks for path nodes on print width overflow", async () => {
+    let formatted = await format(`foo.bar.baz`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`"foo.bar.baz"`);
 
-    formatted = format(`foo.bar.baz.longerSegment`, { printWidth: 20 });
+    formatted = await format(`foo.bar.baz.longerSegment`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         .bar
@@ -412,7 +412,7 @@ describe("prettierPlugin", () => {
         .longerSegment"
     `);
 
-    formatted = format(`foo.bar[a = b].baz^(<c,>d).longerSegment`, { printWidth: 20 });
+    formatted = await format(`foo.bar[a = b].baz^(<c,>d).longerSegment`, { printWidth: 20 });
     expect(formatted).toMatchInlineSnapshot(`
       "foo
         .bar[a = b]
@@ -421,228 +421,228 @@ describe("prettierPlugin", () => {
     `);
   });
 
-  test("escapes strings with special characters inside name nodes", () => {
-    let formatted = format(`foo."bar-baz".boo`);
+  test("escapes strings with special characters inside name nodes", async () => {
+    let formatted = await format(`foo."bar-baz".boo`);
     expect(formatted).toMatchInlineSnapshot(`"foo.\`bar-baz\`.boo"`);
 
-    formatted = format(`foo."true".boo`);
+    formatted = await format(`foo."true".boo`);
     expect(formatted).toMatchInlineSnapshot(`"foo.\`true\`.boo"`);
   });
 
-  test("handles predicates on the majority of node types", () => {
-    let formatted = format(`foo[0]`);
+  test("handles predicates on the majority of node types", async () => {
+    let formatted = await format(`foo[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo[0]"`);
 
-    formatted = format(`foo.bar[0]`);
+    formatted = await format(`foo.bar[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo.bar[0]"`);
 
-    formatted = format(`foo[0].bar`);
+    formatted = await format(`foo[0].bar`);
     expect(formatted).toMatchInlineSnapshot(`"foo[0].bar"`);
 
-    formatted = format(`$foo[0]`);
+    formatted = await format(`$foo[0]`);
     expect(formatted).toMatchInlineSnapshot(`"$foo[0]"`);
 
-    formatted = format(`"foo"[0]`);
+    formatted = await format(`"foo"[0]`);
     expect(formatted).toMatchInlineSnapshot(`""foo"[0]"`);
 
-    formatted = format(`123[0]`);
+    formatted = await format(`123[0]`);
     expect(formatted).toMatchInlineSnapshot(`"123[0]"`);
 
-    formatted = format(`true[0]`);
+    formatted = await format(`true[0]`);
     expect(formatted).toMatchInlineSnapshot(`"true[0]"`);
 
-    formatted = format(`null[0]`);
+    formatted = await format(`null[0]`);
     expect(formatted).toMatchInlineSnapshot(`"null[0]"`);
 
-    formatted = format(`foo(bar)[0]`);
+    formatted = await format(`foo(bar)[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)[0]"`);
 
-    formatted = format(`{ "foo": bar }[0]`);
+    formatted = await format(`{ "foo": bar }[0]`);
     expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }[0]"`);
 
-    formatted = format(`[foo, bar][0]`);
+    formatted = await format(`[foo, bar][0]`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar][0]"`);
 
-    formatted = format(`(foo)[0]`);
+    formatted = await format(`(foo)[0]`);
     expect(formatted).toMatchInlineSnapshot(`"(foo)[0]"`);
 
-    formatted = format(`foo.(bar)[0]`);
+    formatted = await format(`foo.(bar)[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo.(bar)[0]"`);
 
-    formatted = format(`foo()[0]`);
+    formatted = await format(`foo()[0]`);
     expect(formatted).toMatchInlineSnapshot(`"foo()[0]"`);
 
-    formatted = format(`function() { foo }[0]`);
+    formatted = await format(`function() { foo }[0]`);
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }[0]"`);
 
-    formatted = format(`foo.{ "foo": %[0] }`);
+    formatted = await format(`foo.{ "foo": %[0] }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %[0] }"`);
 
-    formatted = format(`foo.{ "foo": bar.{ "bar": %.%[0] } }`);
+    formatted = await format(`foo.{ "foo": bar.{ "bar": %.%[0] } }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%[0] } }"`);
   });
 
-  test("handles keepArray on the majority of node types", () => {
-    let formatted = format(`foo[]`);
+  test("handles keepArray on the majority of node types", async () => {
+    let formatted = await format(`foo[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo[]"`);
 
-    formatted = format(`foo.bar[]`);
+    formatted = await format(`foo.bar[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo.bar[]"`);
 
-    formatted = format(`foo[].bar`);
+    formatted = await format(`foo[].bar`);
     expect(formatted).toMatchInlineSnapshot(`"foo[].bar"`);
 
-    formatted = format(`$foo[]`);
+    formatted = await format(`$foo[]`);
     expect(formatted).toMatchInlineSnapshot(`"$foo[]"`);
 
-    formatted = format(`"foo"[]`);
+    formatted = await format(`"foo"[]`);
     expect(formatted).toMatchInlineSnapshot(`""foo"[]"`);
 
-    formatted = format(`123[]`);
+    formatted = await format(`123[]`);
     expect(formatted).toMatchInlineSnapshot(`"123[]"`);
 
-    formatted = format(`true[]`);
+    formatted = await format(`true[]`);
     expect(formatted).toMatchInlineSnapshot(`"true[]"`);
 
-    formatted = format(`null[]`);
+    formatted = await format(`null[]`);
     expect(formatted).toMatchInlineSnapshot(`"null[]"`);
 
-    formatted = format(`foo(bar)[]`);
+    formatted = await format(`foo(bar)[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)[]"`);
 
-    formatted = format(`{ "foo": bar }[]`);
+    formatted = await format(`{ "foo": bar }[]`);
     expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }[]"`);
 
-    formatted = format(`[foo, bar][]`);
+    formatted = await format(`[foo, bar][]`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar][]"`);
 
-    formatted = format(`(foo)[]`);
+    formatted = await format(`(foo)[]`);
     expect(formatted).toMatchInlineSnapshot(`"(foo)[]"`);
 
-    formatted = format(`foo.(bar)[]`);
+    formatted = await format(`foo.(bar)[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo.(bar)[]"`);
 
-    formatted = format(`foo()[]`);
+    formatted = await format(`foo()[]`);
     expect(formatted).toMatchInlineSnapshot(`"foo()[]"`);
 
-    formatted = format(`function() { foo }[]`);
+    formatted = await format(`function() { foo }[]`);
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }[]"`);
 
-    formatted = format(`foo.{ "foo": %[] }`);
+    formatted = await format(`foo.{ "foo": %[] }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %[] }"`);
 
-    formatted = format(`foo.{ "foo": bar.{ "bar": %.%[] } }`);
+    formatted = await format(`foo.{ "foo": bar.{ "bar": %.%[] } }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%[] } }"`);
   });
 
-  test("handles index and focus on the majority of node types", () => {
-    let formatted = format(`foo@$j#$i`);
+  test("handles index and focus on the majority of node types", async () => {
+    let formatted = await format(`foo@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"foo@$j#$i"`);
 
-    formatted = format(`foo.bar@$j#$i`);
+    formatted = await format(`foo.bar@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"foo.bar@$j#$i"`);
 
-    formatted = format(`foo@$j#$i.bar`);
+    formatted = await format(`foo@$j#$i.bar`);
     expect(formatted).toMatchInlineSnapshot(`"foo@$j#$i.bar"`);
 
-    formatted = format(`$foo@$j#$i`);
+    formatted = await format(`$foo@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"$foo@$j#$i"`);
 
-    formatted = format(`"foo"@$j#$i`);
+    formatted = await format(`"foo"@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`""foo"@$j#$i"`);
 
-    formatted = format(`123@$j#$i`);
+    formatted = await format(`123@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"123@$j#$i"`);
 
-    formatted = format(`true@$j#$i`);
+    formatted = await format(`true@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"true@$j#$i"`);
 
-    formatted = format(`null@$j#$i`);
+    formatted = await format(`null@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"null@$j#$i"`);
 
-    formatted = format(`foo(bar)@$j#$i`);
+    formatted = await format(`foo(bar)@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"foo(bar)@$j#$i"`);
 
-    formatted = format(`{ "foo": bar }@$j#$i`);
+    formatted = await format(`{ "foo": bar }@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }@$j#$i"`);
 
-    formatted = format(`[foo, bar]@$j#$i`);
+    formatted = await format(`[foo, bar]@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar]@$j#$i"`);
 
-    formatted = format(`(foo)@$j#$i`);
+    formatted = await format(`(foo)@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"(foo)@$j#$i"`);
 
-    formatted = format(`foo()@$j#$i`);
+    formatted = await format(`foo()@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"foo()@$j#$i"`);
 
-    formatted = format(`function() { foo }@$j#$i`);
+    formatted = await format(`function() { foo }@$j#$i`);
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }@$j#$i"`);
 
-    formatted = format(`foo.{ "foo": %@$j#$i }`);
+    formatted = await format(`foo.{ "foo": %@$j#$i }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %@$j#$i }"`);
 
-    formatted = format(`foo.{ "foo": bar.{ "bar": %.%@$j#$i } }`);
+    formatted = await format(`foo.{ "foo": bar.{ "bar": %.%@$j#$i } }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%@$j#$i } }"`);
   });
 
-  test("handles grouping on the majority of node types", () => {
-    let formatted = format(`foo{ k: v }`);
+  test("handles grouping on the majority of node types", async () => {
+    let formatted = await format(`foo{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"foo{ k: v }"`);
 
-    formatted = format(`foo.bar{ k: v }`);
+    formatted = await format(`foo.bar{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.bar{ k: v }"`);
 
-    formatted = format(`$foo{ k: v }`);
+    formatted = await format(`$foo{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"$foo{ k: v }"`);
 
-    formatted = format(`"foo"{ k: v }`);
+    formatted = await format(`"foo"{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`""foo"{ k: v }"`);
 
-    formatted = format(`123{ k: v }`);
+    formatted = await format(`123{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"123{ k: v }"`);
 
-    formatted = format(`true{ k: v }`);
+    formatted = await format(`true{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"true{ k: v }"`);
 
-    formatted = format(`null{ k: v }`);
+    formatted = await format(`null{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"null{ k: v }"`);
 
-    formatted = format(`foo(bar){ k: v }`);
+    formatted = await format(`foo(bar){ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"foo(bar){ k: v }"`);
 
-    formatted = format(`{ "foo": bar }{ k: v }`);
+    formatted = await format(`{ "foo": bar }{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"{ "foo": bar }{ k: v }"`);
 
-    formatted = format(`[foo, bar]{ k: v }`);
+    formatted = await format(`[foo, bar]{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"[foo, bar]{ k: v }"`);
 
-    formatted = format(`(foo){ k: v }`);
+    formatted = await format(`(foo){ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"(foo){ k: v }"`);
 
-    formatted = format(`foo.(bar){ k: v }`);
+    formatted = await format(`foo.(bar){ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.(bar){ k: v }"`);
 
-    formatted = format(`foo(){ k: v }`);
+    formatted = await format(`foo(){ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"foo(){ k: v }"`);
 
-    formatted = format(`function() { foo }{ k: v }`);
+    formatted = await format(`function() { foo }{ k: v }`);
     expect(formatted).toMatchInlineSnapshot(`"function() { foo }{ k: v }"`);
 
-    formatted = format(`foo.{ "foo": %{ k: v } }`);
+    formatted = await format(`foo.{ "foo": %{ k: v } }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": %{ k: v } }"`);
 
-    formatted = format(`foo.{ "foo": bar.{ "bar": %.%{ k: v } } }`);
+    formatted = await format(`foo.{ "foo": bar.{ "bar": %.%{ k: v } } }`);
     expect(formatted).toMatchInlineSnapshot(`"foo.{ "foo": bar.{ "bar": %.%{ k: v } } }"`);
   });
 
-  test("preserves comments", () => {
-    let formatted = format(`/* look - I have a comment for you */ foo.bar.baz`);
+  test("preserves comments", async () => {
+    let formatted = await format(`/* look - I have a comment for you */ foo.bar.baz`);
     expect(formatted).toMatchInlineSnapshot(`
       "/* look - I have a comment for you */
       foo.bar.baz"
     `);
 
-    formatted = format(
+    formatted = await format(
       `/* let's check this condition */ isConditionOk ? /* we should do the right thing */ $ifYesDoThis() : /* we should do something else */ $ifNoDoAnotherThing()`,
     );
     expect(formatted).toMatchInlineSnapshot(`
@@ -798,7 +798,7 @@ $map([{ "key": "1", "value": 2 }, { "key": "1", "value": 2 }], function($v, $i, 
   .{ "key": $.param.key, "value": $.param.value }
       `,
     ],
-  ])("can format complex example: %p", (input, expectedOutput) => {
-    expect(format(input)).toEqual(expectedOutput.trim());
+  ])("can format complex example: %p", async (input, expectedOutput) => {
+    expect(await format(input)).toEqual(expectedOutput.trim());
   });
 });
