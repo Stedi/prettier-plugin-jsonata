@@ -8,4 +8,4 @@ jobs:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
         with:
           fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@456526eec71276a59e74aafdfe06a9632ac2eee1 # v5
+      - uses: wagoid/commitlint-github-action@295fb249a86603a0cf87ae19aacf64c0ba8b87fc # v5
