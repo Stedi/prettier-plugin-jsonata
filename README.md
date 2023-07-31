@@ -61,10 +61,16 @@ Alternatively, you can use the `formatJsonata` function:
 ```ts
 import { formatJsonata } from "@stedi/prettier-plugin-jsonata/dist/lib";
 
-const expression = "($myVar:=foo.bar[]; $reverse($myVar))";
-const formattedExpression = formatJsonata(expression);
+async function format() {
+  const expression = "($myVar:=foo.bar[]; $reverse($myVar))";
+  const formattedExpression = await formatJsonata(expression);
 
-console.log(formattedExpression);
+  console.log(formattedExpression);
+}
+
+format().catch((e) => {
+  console.log(e);
+});
 ```
 
 If you parse JSONata as part of your business logic and only need to print JSONata AST tree as a formatted string,
@@ -74,8 +80,14 @@ you can use `serializeJsonata` function:
 import jsonata from "jsonata";
 import { serializeJsonata } from "@stedi/prettier-plugin-jsonata/dist/lib";
 
-const jsonataAST = jsonata("($myVar:=foo.bar[]; $reverse($myVar))").ast();
-const formattedExpression = serializeJsonata(jsonataAST);
+async function serialize() {
+  const jsonataAST = jsonata("($myVar:=foo.bar[]; $reverse($myVar))").ast();
+  const formattedExpression = await serializeJsonata(jsonataAST);
 
-console.log(formattedExpression);
+  console.log(formattedExpression);
+}
+
+serialize().catch((e) => {
+  console.log(e);
+});
 ```
