@@ -10,7 +10,7 @@ describe(serializeJsonata, () => {
     const jsonataString = `($custName := interchanges[0].interchange_control_header_ISA.interchange_sender_id_06; $custName = "040132628" ? "Cool Cars" : $custName = "1111111" ? "Lame Cars")`;
     const jsonataAST = jsonata(jsonataString).ast() as JsonataASTNode;
 
-    const formattedJsonataString = await serializeJsonata(jsonataAST);
+    const formattedJsonataString = serializeJsonata(jsonataAST);
 
     expect(formattedJsonataString).toBe(`(
   $custName := interchanges[0].interchange_control_header_ISA.interchange_sender_id_06;
@@ -25,18 +25,18 @@ describe(serializeJsonata, () => {
     const jsonataString = "foo.`bar.0.baz`";
     const jsonataAST = jsonata(jsonataString).ast() as JsonataASTNode;
 
-    const formattedJsonataString = await serializeJsonata(jsonataAST);
+    const formattedJsonataString = serializeJsonata(jsonataAST);
     expect(formattedJsonataString).toEqual("foo.`bar.0.baz`");
   });
 
   test("clears prettier cache between operations and prevents context leaks between serialization attempts", async () => {
     let jsonataAST = jsonata('$$.new.context.path.{ "key": "value" }').ast() as JsonataASTNode;
-    let serializedJsonataAST = await serializeJsonata(jsonataAST);
+    let serializedJsonataAST = serializeJsonata(jsonataAST);
 
     expect(serializedJsonataAST).toEqual('$$.new.context.path.{ "key": "value" }');
 
     jsonataAST = jsonata("foo.bar.baz").ast() as JsonataASTNode;
-    serializedJsonataAST = await serializeJsonata(jsonataAST);
+    serializedJsonataAST = serializeJsonata(jsonataAST);
 
     /**
      * If the prettier cache was not cleared, the input from the previous serialization attempt would leak into the result.
