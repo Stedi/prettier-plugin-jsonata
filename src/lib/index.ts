@@ -1,8 +1,9 @@
 import * as prettierPlugin from "../plugin";
-import * as prettier from "prettier";
-import type { Options as PrettierOptions } from "prettier";
+import { format, printDocToStringSync, printAstToDocSync, printToDocSync } from "prettier/standalone";
+import type { Plugin, Options as PrettierOptions } from "prettier";
 import type { JsonataASTNode } from "../types";
 import { locEnd, locStart } from "../plugin/parser";
+import { print } from "../plugin/printer";
 
 type SupportedPrettierOptions = Pick<PrettierOptions, "printWidth" | "tabWidth" | "useTabs">;
 
@@ -10,9 +11,7 @@ type SupportedPrettierOptions = Pick<PrettierOptions, "printWidth" | "tabWidth" 
  * Re-formats JSONata expression string in an opinionated way on where to put line breaks and whitespace.
  */
 export async function formatJsonata(expression: string, options?: SupportedPrettierOptions): Promise<string> {
-  clearPrettierCacheIfAvailable();
-
-  return await prettier.format(expression, {
+  return await format(expression, {
     parser: prettierPlugin.AST_PARSER_NAME,
     plugins: [prettierPlugin],
     printWidth: 150,
@@ -20,6 +19,49 @@ export async function formatJsonata(expression: string, options?: SupportedPrett
     useTabs: false,
     ...options,
   });
+}
+
+export function formatJsonataSync(expression: string, options?: SupportedPrettierOptions): string {
+  const doc = printToDocSync(expression, {
+    parser: prettierPlugin.AST_PARSER_NAME,
+    plugins: [prettierPlugin],
+    printer: {
+      print,
+    },
+  });
+
+  const { formatted } = printDocToStringSync(doc, {
+    parser: prettierPlugin.AST_PARSER_NAME,
+    plugins: [prettierPlugin],
+    printWidth: 150,
+    tabWidth: 2,
+    useTabs: false,
+    ...options,
+  });
+
+  return formatted;
+}
+
+export function serializeJsonataSync(jsonataAST: JsonataASTNode, options?: SupportedPrettierOptions): string {
+  const pluginBoundToAST = buildPluginBoundToAST(jsonataAST);
+  const doc = printAstToDocSync(jsonataAST, {
+    parser: prettierPlugin.AST_PARSER_NAME,
+    plugins: [pluginBoundToAST],
+    printer: {
+      print,
+    },
+  });
+
+  const { formatted } = printDocToStringSync(doc, {
+    parser: prettierPlugin.AST_PARSER_NAME,
+    plugins: [pluginBoundToAST],
+    printWidth: 150,
+    tabWidth: 2,
+    useTabs: false,
+    ...options,
+  });
+
+  return formatted;
 }
 
 /**
@@ -31,9 +73,7 @@ export async function serializeJsonata(
 ): Promise<string> {
   const pluginBoundToAST = buildPluginBoundToAST(jsonataAST);
 
-  clearPrettierCacheIfAvailable();
-
-  return await prettier.format("ignore text input", {
+  return await format("ignore text input", {
     parser: prettierPlugin.AST_PARSER_NAME,
     plugins: [pluginBoundToAST],
     printWidth: 150,
@@ -50,7 +90,7 @@ export async function serializeJsonata(
  * To work around it, we are adding this dynamic plugin generator, which returns its AST argument as the result of `parse` callback
  * without any parsing, ignoring text input.
  */
-const buildPluginBoundToAST = (jsonataAST: JsonataASTNode): prettier.Plugin => {
+const buildPluginBoundToAST = (jsonataAST: JsonataASTNode): Plugin => {
   return {
     ...prettierPlugin,
     parsers: {
@@ -63,15 +103,3 @@ const buildPluginBoundToAST = (jsonataAST: JsonataASTNode): prettier.Plugin => {
     },
   };
 };
-
-/**
- * Allows to clear prettier cache when executed in nodejs (mostly in unit tests)
- */
-function clearPrettierCacheIfAvailable() {
-  // Because the issue with cache only happens in unit tests executed in nodejs,
-  // and the `clearConfigCache` is only exposed by Prettier in nodejs (it's not present in the browser version of it),
-  // we have to check for its presense before running the method.
-  if ("clearConfigCache" in prettier) {
-    prettier.clearConfigCache();
-  }
-}

@@ -198,3 +198,12 @@ export type JsonataASTNode =
   | NullNode
   | ParentNode
   | RegexNode;
+
+/**
+ * Exported via the patch-package file.
+ */
+declare module "prettier/standalone" {
+  function printDocToStringSync(doc: unknown, options: unknown): { formatted: string };
+  function printAstToDocSync(ast: unknown, options: unknown): unknown;
+  function printToDocSync(value: string, options: unknown): unknown;
+}

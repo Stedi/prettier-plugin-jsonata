@@ -26,7 +26,7 @@ import type {
   NegationUnaryNode,
   RegexNode,
 } from "../types";
-import * as prettier from "prettier";
+import { builders } from "prettier/doc";
 import type { AstPath, Doc, Options, Printer } from "prettier";
 import { JsonataComment } from "./parser";
 
@@ -123,7 +123,7 @@ type PrintNodeFunction<T extends JsonataASTNode = JsonataASTNode> = (
   printChildren: PrintChildrenFunction,
 ) => Doc;
 
-const { group, indent, join, line, hardline, breakParent, softline } = prettier.doc.builders;
+const { group, indent, join, line, hardline, breakParent, softline } = builders;
 
 const printComment = (comment: JsonataComment): Doc => {
   return group(["/* ", comment.value, " */", hardline]);
