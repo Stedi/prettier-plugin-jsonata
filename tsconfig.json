@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "noUncheckedIndexedAccess": true,
-    "rootDir": "./src"
+    "rootDir": "./"
   },
   "exclude": [
     "dist",

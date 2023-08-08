@@ -1,10 +1,11 @@
 import * as prettierPlugin from "..";
-import * as prettier from "prettier";
+import type { Options } from "prettier";
+import { format as prettierFormat } from "prettier/standalone";
 import jsonata from "jsonata";
 
 describe("prettierPlugin", () => {
-  const format = async (input: string, options?: prettier.Options) => {
-    const formatted = await prettier.format(input, {
+  const format = async (input: string, options?: Options) => {
+    const formatted = await prettierFormat(input, {
       parser: prettierPlugin.AST_PARSER_NAME,
       plugins: [prettierPlugin],
       printWidth: 150,
