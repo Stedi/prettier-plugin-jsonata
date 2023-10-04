@@ -46,6 +46,13 @@
       "automerge": true,
       "platformAutomerge": true,
       "addLabels": ["dependencies"]
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "/^[~^]?0/",
+      "automerge": false,
+      "dependencyDashboardApproval": false,
+      "addLabels": ["dependencies", "major-upgrade"]
     }
   ],
   "npmrcMerge": true
