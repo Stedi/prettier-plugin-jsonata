@@ -55,5 +55,6 @@
       "addLabels": ["dependencies", "major-upgrade"]
     }
   ],
-  "npmrcMerge": true
+  "npmrcMerge": true,
+  "ignoreDeps": ["monaco-editor", "prettier"]
 }
