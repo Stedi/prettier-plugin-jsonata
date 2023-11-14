@@ -50,7 +50,8 @@
     {
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "/^[~^]?0/",
-      "automerge": false,
+      "automerge": true,
+      "platformAutomerge": true,
       "dependencyDashboardApproval": false,
       "addLabels": ["dependencies", "major-upgrade"]
     }
