@@ -25,6 +25,7 @@ import type {
   OperatorNode,
   NegationUnaryNode,
   RegexNode,
+  TransformNode,
 } from "../types";
 import { builders } from "prettier/doc";
 import type { AstPath, Doc, Options, Printer } from "prettier";
@@ -110,7 +111,9 @@ const printNode: PrintNodeFunction = (node, ...commonPrintArgs) => {
   } else if (node.type === "parent") {
     return printParentNode(node, ...commonPrintArgs);
   } else if (node.type === "regex") {
-    return printRegEx(node, ...commonPrintArgs);
+    return printRegExNode(node, ...commonPrintArgs);
+  } else if (node.type === "transform") {
+    return printTransformNode(node, ...commonPrintArgs);
   }
 
   throw new Error(`Unknown node type: ${(node as JsonataASTNode).type}`);
@@ -451,7 +454,7 @@ const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, pri
 // https://github.com/jsonata-js/jsonata/blob/3cea53fe5f2bc94d9026fafb109a1c148fc7679b/src/parser.js#L95
 const supportedRegexFlags = ["i", "m"];
 
-const printRegEx: PrintNodeFunction<RegexNode> = (node, path, options, printChildren) => {
+const printRegExNode: PrintNodeFunction<RegexNode> = (node, path, options, printChildren) => {
   const flags = supportedRegexFlags.filter((flag) => node.value.flags.includes(flag)).join("");
 
   return group([
@@ -461,6 +464,23 @@ const printRegEx: PrintNodeFunction<RegexNode> = (node, path, options, printChil
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
     printKeepArray(node),
+  ]);
+};
+
+const printTransformNode: PrintNodeFunction<TransformNode> = (node, path, options, printChildren) => {
+  const mutationParts = [printChildren("update")];
+  if (node.delete) {
+    mutationParts.push(printChildren("delete"));
+  }
+
+  return group([
+    "|",
+    join("|", [printChildren("pattern"), join([",", line], mutationParts)]),
+    "|",
+    printNodeGroup(node, path, options, printChildren),
+    printNodeFocus(node),
+    printNodeIndex(node),
+    printPredicate(node, path, options, printChildren),
   ]);
 };
 

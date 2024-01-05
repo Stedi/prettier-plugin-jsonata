@@ -123,6 +123,10 @@ describe("prettierPlugin", () => {
     ["/\\d{5}(-\\d{4})?/i"],
     ["/[2-9]|[12]\\d|3[0-6]/m"],
     ["/(\\w+)\\s(\\w+)/im"],
+    ['|foo.bar|{ "foo": "bar" }|'],
+    ['|foo.bar|{ "foo": "bar" }, ["baz"]|'],
+    ['$ ~> |foo.bar|{ "foo": "bar" }|'],
+    ['$ ~> |foo.bar|{ "foo": "bar" }, ["baz"]|'],
   ])("can format simple %p example without changes", async (input) => {
     const formatted = await format(input);
     expect(formatted).toEqual(input);

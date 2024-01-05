@@ -172,6 +172,13 @@ export interface RegexNode extends Node {
   value: RegExp;
 }
 
+export interface TransformNode extends Node {
+  type: "transform";
+  pattern: JsonataASTNode;
+  update: ObjectUnaryNode;
+  delete?: ArrayUnaryNode;
+}
+
 export type LiteralNode = NumberNode | StringNode | ValueNode;
 
 export type JsonataASTNode =
@@ -197,7 +204,8 @@ export type JsonataASTNode =
   | SortNode
   | NullNode
   | ParentNode
-  | RegexNode;
+  | RegexNode
+  | TransformNode;
 
 /**
  * Exported via the patch-package file.
