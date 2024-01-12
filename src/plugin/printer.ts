@@ -143,11 +143,11 @@ const printBinaryNode: PrintNodeFunction<BinaryNode> = (node, path, options, pri
 const printNameNode: PrintNodeFunction<NameNode> = (node, path, options, printChildren) => {
   return group([
     printEscapedNameNodeValue(node.value),
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printStages(node, path, options, printChildren),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -155,10 +155,10 @@ const printNameNode: PrintNodeFunction<NameNode> = (node, path, options, printCh
 const printNumberNode: PrintNodeFunction<NumberNode> = (node, path, options, printChildren) => {
   return group([
     JSON.stringify(node.value),
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -166,10 +166,10 @@ const printNumberNode: PrintNodeFunction<NumberNode> = (node, path, options, pri
 const printStringNode: PrintNodeFunction<StringNode> = (node, path, options, printChildren) => {
   return group([
     JSON.stringify(node.value),
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -197,10 +197,10 @@ const printFunctionNode: PrintFunctionNodeFunction = (node, path, options, print
     "(",
     printFunctionArguments(node, path, options, printChildren),
     ")",
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
     printStages(node, path, options, printChildren),
   ]);
@@ -224,10 +224,10 @@ const printVariableNode: PrintNodeFunction<VariableNode> = (node, path, options,
   return group([
     "$",
     node.value,
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
     printStages(node, path, options, printChildren),
   ]);
@@ -265,10 +265,10 @@ const printLambdaNode: PrintNodeFunction<LambdaNode> = (node, path, options, pri
     indent([line, printChildren("body")]),
     line,
     "}",
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -288,10 +288,10 @@ const printConditionNode: PrintNodeFunction<ConditionNode> = (node, path, option
 const printValueNode: PrintNodeFunction<ValueNode> = (node, path, options, printChildren) => {
   return group([
     printValueNodeValue(node, path, options, printChildren),
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -314,10 +314,10 @@ const printBlockNode: PrintNodeFunction<BlockNode> = (node, path, options, print
       "(",
       printChildren(["expressions", 0]),
       ")",
-      printNodeGroup(node, path, options, printChildren),
       printNodeFocus(node),
       printNodeIndex(node),
       printPredicate(node, path, options, printChildren),
+      printNodeGroup(node, path, options, printChildren),
       printKeepArray(node),
       printStages(node, path, options, printChildren),
     ]);
@@ -329,10 +329,10 @@ const printBlockNode: PrintNodeFunction<BlockNode> = (node, path, options, print
     indent([hardline, joinedExpressions]),
     hardline,
     ")",
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -375,10 +375,10 @@ const printObjectUnaryNode: PrintNodeFunction<ObjectUnaryNode> = (node, path, op
     "{",
     printUnaryTuplesForObjectUnaryNode(node, path, options, printChildren),
     "}",
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -427,10 +427,10 @@ const printArrayUnaryNode: PrintNodeFunction<ArrayUnaryNode> = (node, path, opti
     indent([softline, joinedExpressions]),
     softline,
     "]",
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -442,10 +442,10 @@ const printNegationUnaryNode: PrintNodeFunction<NegationUnaryNode> = (node, path
 const printParentNode: PrintNodeFunction<ParentNode> = (node, path, options, printChildren) => {
   return group([
     "%",
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
     printStages(node, path, options, printChildren),
   ]);
@@ -459,10 +459,10 @@ const printRegExNode: PrintNodeFunction<RegexNode> = (node, path, options, print
 
   return group([
     `/${node.value.source}/${flags}`,
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
     printKeepArray(node),
   ]);
 };
@@ -477,10 +477,10 @@ const printTransformNode: PrintNodeFunction<TransformNode> = (node, path, option
     "|",
     join("|", [printChildren("pattern"), join([",", line], mutationParts)]),
     "|",
-    printNodeGroup(node, path, options, printChildren),
     printNodeFocus(node),
     printNodeIndex(node),
     printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
   ]);
 };
 
