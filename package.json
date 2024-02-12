@@ -60,7 +60,7 @@
     "jest-matcher-specific-error": "1.0.0",
     "jsonata": "2.0.3",
     "semantic-release": "21.1.2",
-    "ts-jest": "29.1.1",
+    "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
     "typescript": "5.3.3",
     "patch-package": "8.0.0"
