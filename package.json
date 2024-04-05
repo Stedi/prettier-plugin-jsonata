@@ -59,11 +59,11 @@
     "jest-extended": "4.0.2",
     "jest-matcher-specific-error": "1.0.0",
     "jsonata": "2.0.4",
+    "patch-package": "8.0.0",
     "semantic-release": "21.1.2",
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
-    "typescript": "5.4.3",
-    "patch-package": "8.0.0"
+    "typescript": "5.4.3"
   },
   "peerDependencies": {
     "jsonata": "^1.7.0 || ^2.0.0"
