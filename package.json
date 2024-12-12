@@ -13,7 +13,7 @@
   "scripts": {
     "test": "SKIP_EXPOSE=true NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest.unit.ts",
     "types": "tsc -p tsconfig.build.json --noEmit",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --config eslint.config.mjs",
     "style": "prettier -c .",
     "build": "npm run clean && npm run build:package",
     "build:package": "tsc -p tsconfig.build.json",
@@ -49,8 +49,8 @@
     "@swc/core": "1.9.2",
     "@swc/jest": "0.2.37",
     "@types/jest": "29.5.14",
-    "@typescript-eslint/eslint-plugin": "6.21.0",
-    "@typescript-eslint/parser": "6.21.0",
+    "@typescript-eslint/eslint-plugin": "8.11.0",
+    "@typescript-eslint/parser": "8.11.0",
     "concurrently": "8.2.2",
     "esbuild": "0.24.0",
     "eslint": "8.57.1",
@@ -63,7 +63,11 @@
     "semantic-release": "21.1.2",
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "eslint-plugin-import": "2.31.0",
+    "eslint-plugin-prettier": "5.2.1",
+    "eslint-plugin-typescript-sort-keys": "3.3.0",
+    "globals": "15.11.0"
   },
   "peerDependencies": {
     "jsonata": "^1.7.0 || ^2.0.0"
