@@ -65,7 +65,7 @@
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
     "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-prettier": "5.2.2",
+    "eslint-plugin-prettier": "5.2.3",
     "eslint-plugin-typescript-sort-keys": "3.3.0",
     "globals": "15.14.0",
     "eslint-plugin-jest": "28.11.0",
