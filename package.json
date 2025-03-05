@@ -67,7 +67,7 @@
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-prettier": "5.2.3",
     "eslint-plugin-typescript-sort-keys": "3.3.0",
-    "globals": "15.14.0",
+    "globals": "15.15.0",
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "@eslint-recommended/eslint-config": "26.1.1"
