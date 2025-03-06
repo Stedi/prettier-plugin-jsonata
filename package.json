@@ -70,7 +70,7 @@
     "globals": "15.15.0",
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-unused-imports": "4.1.4",
-    "@eslint-recommended/eslint-config": "26.1.1"
+    "@eslint-recommended/eslint-config": "26.1.2"
   },
   "peerDependencies": {
     "jsonata": "^1.7.0 || ^2.0.0"
