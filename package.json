@@ -68,7 +68,7 @@
     "semantic-release": "21.1.2",
     "ts-jest": "29.2.6",
     "ts-node": "10.9.2",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
   "peerDependencies": {
     "jsonata": "^1.7.0 || ^2.0.0"
