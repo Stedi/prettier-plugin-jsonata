@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "8.28.0",
     "@typescript-eslint/parser": "8.28.0",
     "concurrently": "8.2.2",
-    "esbuild": "0.25.1",
+    "esbuild": "0.25.2",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-prettier": "5.2.4",
