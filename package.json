@@ -55,7 +55,7 @@
     "esbuild": "0.25.4",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
-    "eslint-plugin-prettier": "5.2.6",
+    "eslint-plugin-prettier": "5.4.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "eslint": "9.27.0",
     "globals": "15.15.0",
