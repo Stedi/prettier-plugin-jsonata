@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   release-external:
     runs-on: ubuntu-latest
