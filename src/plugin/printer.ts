@@ -347,7 +347,18 @@ const printSortNode: PrintNodeFunction<SortNode> = (node, path, options, printCh
   });
   const joinedSortTerms = join([",", line], sortTerms);
 
-  return group(["(", indent([softline, joinedSortTerms]), softline, ")"]);
+  return group([
+    "(",
+    indent([softline, joinedSortTerms]),
+    softline,
+    ")",
+    printNodeFocus(node),
+    printNodeIndex(node),
+    printStages(node, path, options, printChildren),
+    printPredicate(node, path, options, printChildren),
+    printNodeGroup(node, path, options, printChildren),
+    printKeepArray(node),
+  ]);
 };
 
 const printSortTermPrefix = (sortTerm: SortNode["terms"][0]) => {
@@ -509,7 +520,7 @@ const printPredicate: PrintNodeFunction = (node, path, options, printChildren) =
 };
 
 const printStages: PrintNodeFunction<
-  NameNode | VariableNode | ParentNode | BlockNode | FunctionNode | PartialFunctionNode
+  NameNode | VariableNode | ParentNode | BlockNode | FunctionNode | PartialFunctionNode | SortNode
 > = (node, path, options, printChildren) => {
   if (!node.stages) {
     return "";
