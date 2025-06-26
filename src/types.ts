@@ -91,6 +91,7 @@ export interface SortNode extends Node {
       expression: JsonataASTNode;
     },
   ];
+  stages?: JsonataASTNode[];
 }
 
 export type UnaryNode = ObjectUnaryNode | ArrayUnaryNode | NegationUnaryNode;

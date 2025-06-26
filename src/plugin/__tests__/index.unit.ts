@@ -70,6 +70,8 @@ describe("prettierPlugin", () => {
     ["**.foo"],
     ["foo ~> $max()"],
     ["foo^(<bar)"],
+    ["foo^(<bar)[0]"],
+    ["foo^(<bar)[bar = 1]"],
     ["loans@$foo#$bar"],
     ["loans@$foo"],
     ["loans#$bar"],
