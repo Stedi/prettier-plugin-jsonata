@@ -84,5 +84,8 @@
   "sideEffects": false,
   "dependencies": {
     "prettier": "3.0.1"
+  },
+  "overrides": {
+    "tmp": ">=0.2.4"
   }
 }
